@@ -40,9 +40,15 @@ export default function RootLayout({
           <a href="#main-content" className="skip-link">
             Skip to main content
           </a>
-          <Navbar />
-          <main id="main-content" className="min-h-[calc(100dvh-8rem)]">{children}</main>
-          <Footer />
+          <div className="flex min-h-dvh">
+            {/* Left accent strip */}
+            <div className="w-3 shrink-0 bg-accent" />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <Navbar />
+              <main id="main-content" className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </div>
         </ThemeProvider>
       </body>
     </html>

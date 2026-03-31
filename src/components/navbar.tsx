@@ -18,8 +18,11 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full">
-      {/* Top row: logo blob + nav */}
-      <nav aria-label="Main navigation" className="relative flex items-end">
+      {/* Thin accent strip across the top */}
+      <div className="h-3 w-full bg-accent" />
+
+      {/* Logo blob + nav */}
+      <nav aria-label="Main navigation" className="relative flex items-start">
         {/* Logo with curved background blob */}
         <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-accent px-6 py-4 pr-10">
           <Link
@@ -28,10 +31,14 @@ export function Navbar() {
           >
             mruud.com
           </Link>
+          {/* Concave curve connecting blob to top strip */}
+          <div className="navbar-concave-curve" />
+          {/* Concave curve connecting blob to left strip */}
+          <div className="navbar-concave-curve-bottom" />
         </div>
 
         {/* Desktop nav - frosted pill */}
-        <div className="mb-2 ml-4 hidden items-center rounded-full border border-border/50 bg-background/60 px-2 backdrop-blur-xl md:flex">
+        <div className="mt-2 ml-4 hidden items-center rounded-full border border-border/50 bg-background/60 px-2 backdrop-blur-xl md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -50,7 +57,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile toggle */}
-        <div className="mb-2 flex flex-1 items-center justify-end gap-2 px-6 md:hidden">
+        <div className="mt-2 flex flex-1 items-center justify-end gap-2 px-6 md:hidden">
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -62,9 +69,6 @@ export function Navbar() {
           </button>
         </div>
       </nav>
-
-      {/* Thin accent strip that extends full width */}
-      <div className="h-3 w-full bg-accent" />
 
       {/* Mobile menu */}
       {mobileOpen && (

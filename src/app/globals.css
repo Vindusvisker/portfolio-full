@@ -231,6 +231,26 @@
   }
 }
 
+/* Navbar concave curve - inverse rounded corner connecting blob to strip */
+.navbar-concave-curve {
+  position: absolute;
+  top: 0;
+  right: -1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: radial-gradient(circle at 100% 100%, transparent 1.5rem, var(--accent) 1.5rem);
+}
+
+/* Concave curve connecting logo blob to left strip */
+.navbar-concave-curve-bottom {
+  position: absolute;
+  bottom: -2.5rem;
+  left: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: radial-gradient(circle at 100% 100%, transparent 2.5rem, var(--accent) 2.5rem);
+}
+
 /* Skip link styles */
 .skip-link {
   position: absolute;
