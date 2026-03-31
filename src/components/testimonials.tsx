@@ -1,7 +1,9 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
-import { useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { useCallback, useEffect, useState } from "react";
 
 const testimonials = [
   {
@@ -67,50 +69,61 @@ const testimonials = [
 ];
 
 export function Testimonials() {
-  const [current, setCurrent] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+    Autoplay({ delay: 5000, stopOnInteraction: true }),
+  ]);
 
-  const prev = () =>
-    setCurrent((c) => (c === 0 ? testimonials.length - 1 : c - 1));
-  const next = () =>
-    setCurrent((c) => (c === testimonials.length - 1 ? 0 : c + 1));
+  const [selected, setSelected] = useState(0);
 
-  const testimonial = testimonials[current];
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setSelected(emblaApi.selectedScrollSnap());
+    emblaApi.on("select", onSelect);
+    return () => { emblaApi.off("select", onSelect); };
+  }, [emblaApi]);
+
+  const prev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const next = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
     <section className="mx-auto max-w-3xl px-6 py-16">
       <h2 className="slide-enter text-lg font-bold">What others say</h2>
-      <div className="mt-8 rounded-xl border border-border/50 bg-card p-8">
-        <Quote size={24} className="text-primary/40" />
-        <blockquote className="mt-4 text-sm leading-relaxed text-card-foreground">
-          &ldquo;{testimonial.quote}&rdquo;
-        </blockquote>
-        <div className="mt-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium">{testimonial.name}</p>
-            <p className="text-xs text-muted-foreground">
-              {testimonial.title || testimonial.handle}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={prev}
-              className="rounded-md border border-border/50 p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              aria-label="Previous testimonial"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {current + 1} / {testimonials.length}
-            </span>
-            <button
-              onClick={next}
-              className="rounded-md border border-border/50 p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              aria-label="Next testimonial"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
+      <div className="mt-8 overflow-hidden rounded-xl border border-border/50 bg-card" ref={emblaRef}>
+        <div className="flex">
+          {testimonials.map((testimonial, i) => (
+            <div key={i} className="min-w-0 flex-[0_0_100%] p-8">
+              <Quote size={24} className="text-primary/40" aria-hidden="true" />
+              <blockquote className="mt-4 text-sm leading-relaxed text-card-foreground">
+                &ldquo;{testimonial.quote}&rdquo;
+              </blockquote>
+              <div className="mt-6">
+                <p className="text-sm font-medium">{testimonial.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {testimonial.title || testimonial.handle}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
+      </div>
+      <div className="mt-4 flex items-center justify-end gap-3">
+        <button
+          onClick={prev}
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer active:scale-[0.98]"
+          aria-label="Previous testimonial"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <span className="text-xs tabular-nums text-muted-foreground">
+          {selected + 1} / {testimonials.length}
+        </span>
+        <button
+          onClick={next}
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer active:scale-[0.98]"
+          aria-label="Next testimonial"
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
     </section>
   );

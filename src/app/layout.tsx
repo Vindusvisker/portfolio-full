@@ -3,6 +3,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import "./globals.css";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Marcus Ruud - Developer",
@@ -30,11 +34,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen font-sans antialiased">
+    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+      <body className="min-h-dvh font-sans antialiased">
         <ThemeProvider>
+          <a href="#main-content" className="skip-link">
+            Skip to main content
+          </a>
           <Navbar />
-          <main className="min-h-[calc(100vh-8rem)]">{children}</main>
+          <main id="main-content" className="min-h-[calc(100dvh-8rem)]">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

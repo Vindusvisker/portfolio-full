@@ -23,14 +23,14 @@ export default async function ProjectsPage() {
             href="https://github.com/vindusvisker"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary underline underline-offset-4 transition-colors hover:text-primary/80"
+            className="text-primary underline underline-offset-4 transition-colors hover:text-primary/80 cursor-pointer"
           >
             GitHub
           </a>
           .
         </p>
       </div>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2">
+      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {repos.map((repo, i) => (
           <div
             key={repo.name}
@@ -40,7 +40,7 @@ export default async function ProjectsPage() {
           </div>
         ))}
         {repos.length === 0 && (
-          <p className="col-span-2 text-sm text-muted-foreground">
+          <p className="col-span-full text-sm text-muted-foreground">
             Unable to load repositories. Check back later.
           </p>
         )}

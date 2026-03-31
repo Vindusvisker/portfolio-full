@@ -32,6 +32,7 @@ export interface SpotifyTrack {
   album: string;
   albumImageUrl: string;
   songUrl: string;
+  previewUrl: string | null;
   playedAt: string;
 }
 
@@ -60,6 +61,7 @@ export async function getRecentlyPlayed(): Promise<SpotifyTrack[]> {
           artists: { name: string }[];
           album: { name: string; images: { url: string }[] };
           external_urls: { spotify: string };
+          preview_url: string | null;
         };
         played_at: string;
       }) => ({
@@ -68,6 +70,7 @@ export async function getRecentlyPlayed(): Promise<SpotifyTrack[]> {
         album: item.track.album.name,
         albumImageUrl: item.track.album.images[0]?.url ?? "",
         songUrl: item.track.external_urls.spotify,
+        previewUrl: item.track.preview_url,
         playedAt: item.played_at,
       })
     );

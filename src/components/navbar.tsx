@@ -17,24 +17,28 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-        <Link
-          href="/"
-          className="text-sm font-bold tracking-tight transition-transform duration-200 hover:-translate-y-0.5"
-        >
-          mruud.com
-        </Link>
+    <header className="sticky top-0 z-40 w-full">
+      {/* Top row: logo blob + nav */}
+      <nav aria-label="Main navigation" className="relative flex items-end">
+        {/* Logo with curved background blob */}
+        <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-accent px-6 py-4 pr-10">
+          <Link
+            href="/"
+            className="flex min-h-[44px] items-center text-sm font-bold tracking-tight transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
+          >
+            mruud.com
+          </Link>
+        </div>
 
-        {/* Desktop nav */}
-        <div className="hidden items-center gap-6 md:flex">
+        {/* Desktop nav - frosted pill */}
+        <div className="mb-2 ml-4 hidden items-center rounded-full border border-border/50 bg-background/60 px-2 backdrop-blur-xl md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-sm transition-colors duration-150 ${
+              className={`flex min-h-[44px] items-center rounded-full px-5 text-sm transition-colors duration-150 cursor-pointer ${
                 pathname === link.href
-                  ? "text-primary font-medium"
+                  ? "text-foreground font-medium"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -46,30 +50,34 @@ export function Navbar() {
         </div>
 
         {/* Mobile toggle */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="mb-2 flex flex-1 items-center justify-end gap-2 px-6 md:hidden">
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="rounded-md p-2 transition-colors hover:bg-accent"
-            aria-label="Toggle menu"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-border/50 bg-background/60 backdrop-blur-xl transition-colors hover:bg-accent cursor-pointer active:scale-[0.98]"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </nav>
 
+      {/* Thin accent strip that extends full width */}
+      <div className="h-3 w-full bg-accent" />
+
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t border-border/50 px-6 py-4 md:hidden">
+        <div className="mx-6 mt-2 rounded-2xl border border-border/50 bg-background/60 px-6 py-4 backdrop-blur-xl md:hidden">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`text-sm transition-colors ${
+                className={`flex min-h-[44px] items-center text-sm transition-colors cursor-pointer ${
                   pathname === link.href
-                    ? "text-primary font-medium"
+                    ? "text-foreground font-medium"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >

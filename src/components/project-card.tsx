@@ -17,7 +17,7 @@ export function ProjectCard({ repo }: { repo: GitHubRepo }) {
       href={repo.html_url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-md"
+      className="group flex flex-col rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-md cursor-pointer active:scale-[0.98]"
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-sm font-semibold group-hover:text-primary transition-colors">
@@ -26,6 +26,7 @@ export function ProjectCard({ repo }: { repo: GitHubRepo }) {
         <ExternalLink
           size={14}
           className="mt-0.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+          aria-hidden="true"
         />
       </div>
       {repo.description && (
@@ -46,7 +47,7 @@ export function ProjectCard({ repo }: { repo: GitHubRepo }) {
         )}
         {repo.stargazers_count > 0 && (
           <span className="flex items-center gap-1">
-            <Star size={12} />
+            <Star size={12} aria-hidden="true" />
             {repo.stargazers_count}
           </span>
         )}
