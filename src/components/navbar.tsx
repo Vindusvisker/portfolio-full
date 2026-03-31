@@ -40,15 +40,15 @@ export function Navbar() {
           </div>
 
           {/* Desktop nav - frosted pill */}
-          <div className="mt-2 ml-2 hidden items-center rounded-2xl border border-border/50 bg-background/60 px-2 py-1 backdrop-blur-xl md:flex">
+          <div className="mt-2 ml-2 hidden items-center rounded-2xl border border-border/50 bg-white/60 px-2 py-1 backdrop-blur-xl md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`flex min-h-[44px] items-center rounded-full px-5 text-sm transition-colors duration-150 cursor-pointer ${
                   pathname === link.href
-                    ? "text-foreground font-medium"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-black font-medium"
+                    : "text-black hover:text-black/50"
                 }`}
               >
                 {link.label}
