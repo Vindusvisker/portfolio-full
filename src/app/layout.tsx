@@ -48,6 +48,8 @@ export default function RootLayout({
               <main id="main-content" className="flex-1">{children}</main>
               <Footer />
             </div>
+            {/* Right accent strip */}
+            <div className="w-3 shrink-0 bg-accent" />
           </div>
         </ThemeProvider>
       </body>

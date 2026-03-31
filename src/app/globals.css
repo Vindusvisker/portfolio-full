@@ -251,6 +251,26 @@
   background: radial-gradient(circle at 100% 100%, transparent 2.5rem, var(--accent) 2.5rem);
 }
 
+/* Right blob: concave curve connecting to top strip (mirrored) */
+.navbar-concave-curve-right {
+  position: absolute;
+  top: 0;
+  left: -1.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: radial-gradient(circle at 0% 100%, transparent 1.5rem, var(--accent) 1.5rem);
+}
+
+/* Right blob: concave curve connecting to right strip (mirrored) */
+.navbar-concave-curve-bottom-right {
+  position: absolute;
+  bottom: -2.5rem;
+  right: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: radial-gradient(circle at 0% 100%, transparent 2.5rem, var(--accent) 2.5rem);
+}
+
 /* Skip link styles */
 .skip-link {
   position: absolute;

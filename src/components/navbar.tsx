@@ -21,43 +21,54 @@ export function Navbar() {
       {/* Thin accent strip across the top */}
       <div className="h-3 w-full bg-accent" />
 
-      {/* Logo blob + nav */}
-      <nav aria-label="Main navigation" className="relative flex items-start">
-        {/* Logo with curved background blob */}
-        <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-accent px-6 py-4 pr-10">
-          <Link
-            href="/"
-            className="flex min-h-[44px] items-center text-sm font-bold tracking-tight transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
-          >
-            mruud.com
-          </Link>
-          {/* Concave curve connecting blob to top strip */}
-          <div className="navbar-concave-curve" />
-          {/* Concave curve connecting blob to left strip */}
-          <div className="navbar-concave-curve-bottom" />
+      {/* Logo blob + nav + socials blob */}
+      <nav aria-label="Main navigation" className="relative flex items-start justify-between">
+        {/* Left: Logo blob + pill */}
+        <div className="flex items-start">
+          {/* Logo with curved background blob */}
+          <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-accent px-6 py-4 pr-10">
+            <Link
+              href="/"
+              className="flex min-h-[44px] items-center text-sm font-bold tracking-tight transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
+            >
+              mruud.com
+            </Link>
+            {/* Concave curve connecting blob to top strip */}
+            <div className="navbar-concave-curve" />
+            {/* Concave curve connecting blob to left strip */}
+            <div className="navbar-concave-curve-bottom" />
+          </div>
+
+          {/* Desktop nav - frosted pill */}
+          <div className="mt-2 ml-2 hidden items-center rounded-2xl border border-border/50 bg-background/60 px-2 py-1 backdrop-blur-xl md:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex min-h-[44px] items-center rounded-full px-5 text-sm transition-colors duration-150 cursor-pointer ${
+                  pathname === link.href
+                    ? "text-foreground font-medium"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <ThemeToggle />
+          </div>
         </div>
 
-        {/* Desktop nav - frosted pill */}
-        <div className="mt-2 ml-4 hidden items-center rounded-full border border-border/50 bg-background/60 px-2 backdrop-blur-xl md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex min-h-[44px] items-center rounded-full px-5 text-sm transition-colors duration-150 cursor-pointer ${
-                pathname === link.href
-                  ? "text-foreground font-medium"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+        {/* Right: Socials blob (desktop) */}
+        <div className="relative z-10 hidden items-center rounded-bl-[2.5rem] bg-accent px-6 py-4 pl-10 md:flex">
           <SocialLinks />
-          <ThemeToggle />
+          {/* Concave curve connecting blob to top strip */}
+          <div className="navbar-concave-curve-right" />
+          {/* Concave curve connecting blob to right strip */}
+          <div className="navbar-concave-curve-bottom-right" />
         </div>
 
         {/* Mobile toggle */}
-        <div className="mt-2 flex flex-1 items-center justify-end gap-2 px-6 md:hidden">
+        <div className="mt-2 flex items-center gap-2 px-6 md:hidden">
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
