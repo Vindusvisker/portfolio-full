@@ -42,14 +42,14 @@ export default function RootLayout({
           </a>
           <div className="flex min-h-dvh">
             {/* Left accent strip */}
-            <div className="w-3 shrink-0 bg-accent" />
+            <div className="w-3 shrink-0 bg-background" />
             <div className="flex min-w-0 flex-1 flex-col">
               <Navbar />
               <main id="main-content" className="flex-1">{children}</main>
               <Footer />
             </div>
             {/* Right accent strip */}
-            <div className="w-3 shrink-0 bg-accent" />
+            <div className="w-3 shrink-0 bg-background" />
           </div>
         </ThemeProvider>
       </body>

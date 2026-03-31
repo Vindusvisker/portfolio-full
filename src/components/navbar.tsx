@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "./theme-toggle";
-import { SocialLinks } from "./social-links";
+import { FileText } from "lucide-react";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
@@ -19,14 +19,14 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full">
       {/* Thin accent strip across the top */}
-      <div className="h-3 w-full bg-accent" />
+      <div className="h-3 w-full bg-background" />
 
       {/* Logo blob + nav + socials blob */}
       <nav aria-label="Main navigation" className="relative flex items-start justify-between">
         {/* Left: Logo blob + pill */}
         <div className="flex items-start">
           {/* Logo with curved background blob */}
-          <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-accent px-6 py-4 pr-10">
+          <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-background px-6 py-4 pr-10">
             <Link
               href="/"
               className="flex min-h-[44px] items-center text-sm font-bold tracking-tight transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
@@ -58,9 +58,18 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Right: Socials blob (desktop) */}
-        <div className="relative z-10 hidden items-center rounded-bl-[2.5rem] bg-accent px-6 py-4 pl-10 md:flex">
-          <SocialLinks />
+        {/* Right: CV blob (desktop) */}
+        <div className="relative z-10 hidden items-center rounded-bl-[2.5rem] bg-background px-6 py-4 pl-10 md:flex">
+          <a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-[44px] items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+            aria-label="Download CV"
+          >
+            <FileText size={20} />
+            <span>CV</span>
+          </a>
           {/* Concave curve connecting blob to top strip */}
           <div className="navbar-concave-curve-right" />
           {/* Concave curve connecting blob to right strip */}
@@ -72,7 +81,7 @@ export function Navbar() {
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-border/50 bg-background/60 backdrop-blur-xl transition-colors hover:bg-accent cursor-pointer active:scale-[0.98]"
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-border/50 bg-background/60 backdrop-blur-xl transition-colors hover:bg-background cursor-pointer active:scale-[0.98]"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
@@ -99,7 +108,15 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <SocialLinks />
+            <a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex min-h-[44px] items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
+            >
+              <FileText size={18} />
+              <span>CV</span>
+            </a>
           </div>
         </div>
       )}
