@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import "./globals.css";
@@ -36,22 +35,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body className="min-h-dvh font-sans antialiased">
-        <ThemeProvider>
-          <a href="#main-content" className="skip-link">
-            Skip to main content
-          </a>
-          <div className="flex min-h-dvh">
-            {/* Left accent strip */}
-            <div className="w-3 shrink-0 bg-background" />
-            <div className="flex min-w-0 flex-1 flex-col">
-              <Navbar />
-              <main id="main-content" className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            {/* Right accent strip */}
-            <div className="w-3 shrink-0 bg-background" />
-          </div>
-        </ThemeProvider>
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        <div className="flex min-h-dvh flex-col">
+          <Navbar />
+          <main id="main-content" className="flex-1">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );

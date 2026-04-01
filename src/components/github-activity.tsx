@@ -121,15 +121,13 @@ export function GitHubActivity() {
         ) : (
           <div className="overflow-x-auto">
             {/* Month labels */}
-            <div className="flex text-xs text-muted-foreground" style={{ paddingLeft: 32 }}>
+            <div className="relative text-xs text-muted-foreground" style={{ paddingLeft: 31, height: 16 }}>
               {monthLabels.map((m, i) => (
                 <span
                   key={i}
                   className="absolute"
                   style={{
-                    position: "relative",
-                    left: `${m.col * 14 - (i > 0 ? monthLabels[i - 1].col * 14 + 28 : 0)}px`,
-                    minWidth: 28,
+                    left: 31 + m.col * 16,
                   }}
                 >
                   {m.label}
@@ -156,7 +154,7 @@ export function GitHubActivity() {
                       return (
                         <div
                           key={di}
-                          className="h-[13px] w-[13px] rounded-sm transition-colors"
+                          className="h-[11px] w-[11px] rounded-[2px] transition-colors"
                           style={{
                             backgroundColor: `var(--contrib-${day.level}, ${LEVEL_COLORS.dark[day.level]})`,
                           }}

@@ -2,52 +2,19 @@
 
 import Image from "next/image";
 import { SocialLinks } from "./social-links";
-import { GridScan } from "./GridScan";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-
-const darkTheme = {
-  linesColor: "#3d3568",
-  scanColor: "#9b8ad4",
-};
-
-const lightTheme = {
-  linesColor: "#b0a8d0",
-  scanColor: "#5b4f91",
-};
+import { Boxes } from "./ui/background-boxes";
 
 export function Hero() {
-  const { theme } = useTheme();
-  const [colors, setColors] = useState(darkTheme);
-
-  useEffect(() => {
-    setColors(theme === "light" ? lightTheme : darkTheme);
-  }, [theme]);
-
   return (
     <>
-      <section className="relative -mt-20 h-dvh">
-        {/* GridScan background — z-10 so it receives mouse events */}
-        <div className="absolute inset-0 z-10">
-          <GridScan
-            sensitivity={0.55}
-            lineThickness={1}
-            linesColor={colors.linesColor}
-            scanColor={colors.scanColor}
-            scanOpacity={0.4}
-            gridScale={0.1}
-            enablePost
-            bloomIntensity={0.6}
-            chromaticAberration={0.002}
-            noiseIntensity={0.01}
-          />
-        </div>
-
-        <div className="relative z-20 pointer-events-none mx-auto flex h-full max-w-3xl flex-col items-start gap-10 px-6 py-16 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex-1 pointer-events-auto">
+      <div className="relative -mt-32 h-[60dvh] overflow-hidden bg-background">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-72 bg-gradient-to-t from-background to-transparent" />
+        <Boxes className="opacity-20" />
+        <section className="pointer-events-none relative z-10 mx-auto flex h-full max-w-3xl flex-col items-start justify-center gap-10 px-6 pb-8 pt-32 sm:flex-row sm:items-center sm:justify-between">
+          <div className="pointer-events-auto flex-1">
             <p className="slide-enter text-sm text-muted-foreground">Hi! I&apos;m</p>
             <h1 className="slide-enter slide-enter-delay-1 mt-2 text-4xl font-extrabold uppercase tracking-tight md:text-5xl">
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-primary">
                 Marcus Ruud
               </span>
             </h1>
@@ -58,8 +25,8 @@ export function Hero() {
               <SocialLinks />
             </div>
           </div>
-          <div className="slide-enter slide-enter-delay-2 relative pointer-events-auto">
-            <div className="relative h-64 w-64 overflow-hidden rounded-2xl border border-border/50 md:h-80 md:w-80">
+          <div className="slide-enter slide-enter-delay-2 pointer-events-auto relative">
+            <div className="relative h-48 w-48 overflow-hidden rounded-full border-2 border-border/30 shadow-lg md:h-60 md:w-60">
               <Image
                 src="/profile.jpg"
                 alt="Marcus Ruud"
@@ -70,16 +37,34 @@ export function Hero() {
               />
             </div>
           </div>
+        </section>
+      </div>
+      <div className="h-24" />
+      <section className="relative z-10 -mt-32 mx-auto max-w-3xl px-6 pb-6">
+        <div className="slide-enter slide-enter-delay-3 space-y-4 text-base leading-relaxed text-foreground">
+          <p>
+            I build scalable web products that solve real problems, from SaaS platforms
+            to AI integrated tools that actually ship to production.
+          </p>
+          <p>
+            Currently a Junior Developer at{" "}
+            <a href="https://supercompany.no" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-muted-foreground transition-colors">Supercompany</a>,
+            where I&apos;m building{" "}
+            <a href="https://trale.ai" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-muted-foreground transition-colors">trale.ai</a>
+            {" "}using Next.js, TypeScript, and Supabase. Bachelor&apos;s degree in Data Science from{" "}
+            <a href="https://noroff.no" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-muted-foreground transition-colors">Noroff</a>.
+          </p>
+          <p>
+            When I&apos;m not coding, I&apos;m probably exercising, watching movies, or
+            teaching AI agents to do my job only to spend even more time reviewing their work.
+          </p>
+          <p>
+            Check out my{" "}
+            <a href="/projects" className="underline underline-offset-4 hover:text-muted-foreground transition-colors">projects</a>
+            {" "}or grab my{" "}
+            <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-muted-foreground transition-colors">CV</a>.
+          </p>
         </div>
-      </section>
-      <section className="mx-auto max-w-3xl px-6 pb-16 pt-16">
-        <h2 className="slide-enter slide-enter-delay-3 text-lg font-bold">About me</h2>
-        <p className="slide-enter slide-enter-delay-4 mt-4 text-sm leading-relaxed text-muted-foreground">
-          I&apos;m a strategic and execution-focused developer passionate about building
-          scalable SaaS, AI-integrated tools, and efficient digital products. With a strong
-          foundation in full-stack development, I specialize in Next.js, TypeScript, and
-          Supabase.
-        </p>
       </section>
     </>
   );

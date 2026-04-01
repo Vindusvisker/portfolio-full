@@ -86,7 +86,7 @@ export function Testimonials() {
   const next = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
-    <section className="mx-auto max-w-3xl px-6 py-16">
+    <section className="mx-auto max-w-3xl px-6">
       <h2 className="slide-enter text-lg font-bold">What others say</h2>
       <div className="mt-8 overflow-hidden rounded-xl border border-border/50 bg-card" ref={emblaRef}>
         <div className="flex">
