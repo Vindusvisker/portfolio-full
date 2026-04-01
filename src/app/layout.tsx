@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://mruud.com"),
   title: "Marcus Ruud - Developer",
   description:
     "I'm Marcus Ruud, a developer building scalable SaaS, AI-integrated tools, and efficient digital products.",

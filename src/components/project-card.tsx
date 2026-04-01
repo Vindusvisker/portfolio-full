@@ -1,3 +1,5 @@
+"use client";
+
 import { Star, Globe } from "lucide-react";
 import type { GitHubRepo } from "@/lib/github";
 
