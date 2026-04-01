@@ -1,4 +1,4 @@
-import { Star, ExternalLink } from "lucide-react";
+import { Star, Globe } from "lucide-react";
 import type { GitHubRepo } from "@/lib/github";
 
 const languageColors: Record<string, string> = {
@@ -13,32 +13,33 @@ const languageColors: Record<string, string> = {
 
 export function ProjectCard({ repo }: { repo: GitHubRepo }) {
   return (
-    <a
-      href={repo.html_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group flex flex-col rounded-xl border border-border/50 bg-card p-5 transition-all duration-200 hover:border-primary/30 hover:shadow-md cursor-pointer active:scale-[0.98]"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="text-sm font-semibold group-hover:text-primary transition-colors">
-          {repo.name}
-        </h3>
-        <ExternalLink
-          size={14}
-          className="mt-0.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
-          aria-hidden="true"
-        />
-      </div>
-      {repo.description && (
-        <p className="mt-2 flex-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
-          {repo.description}
-        </p>
-      )}
-      <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
+    <div className="group flex items-center gap-4 rounded-lg px-3 py-2 transition-colors hover:bg-accent">
+      <a
+        href={repo.html_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="shrink-0 text-sm font-medium group-hover:text-primary transition-colors cursor-pointer"
+      >
+        {repo.name}
+      </a>
+      <span className="h-px flex-1 bg-border/50" />
+      <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
+        {repo.homepage && (
+          <a
+            href={repo.homepage}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-primary hover:text-primary/80 transition-colors cursor-pointer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Globe size={12} aria-hidden="true" />
+            Live
+          </a>
+        )}
         {repo.language && (
           <span className="flex items-center gap-1.5">
             <span
-              className={`inline-block h-2.5 w-2.5 rounded-full ${
+              className={`inline-block h-2 w-2 rounded-full ${
                 languageColors[repo.language] ?? "bg-gray-400"
               }`}
             />
@@ -52,6 +53,6 @@ export function ProjectCard({ repo }: { repo: GitHubRepo }) {
           </span>
         )}
       </div>
-    </a>
+    </div>
   );
 }
