@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, Globe } from "lucide-react";
+import { Globe, GitCommit } from "lucide-react";
 import type { GitHubRepo } from "@/lib/github";
 
 const languageColors: Record<string, string> = {
@@ -13,7 +13,7 @@ const languageColors: Record<string, string> = {
   CSS: "bg-purple-500",
 };
 
-export function ProjectCard({ repo }: { repo: GitHubRepo }) {
+export function ProjectCard({ repo }: { repo: GitHubRepo & { commits?: number } }) {
   return (
     <div className="group flex items-center gap-4 rounded-lg px-3 py-2 transition-colors hover:bg-accent">
       <a
@@ -48,10 +48,10 @@ export function ProjectCard({ repo }: { repo: GitHubRepo }) {
             {repo.language}
           </span>
         )}
-        {repo.stargazers_count > 0 && (
+        {repo.commits && repo.commits > 0 && (
           <span className="flex items-center gap-1">
-            <Star size={12} aria-hidden="true" />
-            {repo.stargazers_count}
+            <GitCommit size={12} aria-hidden="true" />
+            {repo.commits}
           </span>
         )}
       </div>

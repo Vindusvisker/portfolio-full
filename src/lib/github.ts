@@ -8,6 +8,7 @@ export interface GitHubRepo {
   fork: boolean;
   topics: string[];
   pushed_at: string;
+  created_at: string;
 }
 
 export interface ContributionDay {
@@ -26,7 +27,7 @@ export async function getContributions(year?: number): Promise<ContributionData>
     const y = year || new Date().getFullYear();
     const response = await fetch(
       `https://github-contributions-api.jogruber.de/v4/vindusvisker?y=${y}`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 300 } }
     );
 
     if (!response.ok) return { total: 0, days: [] };
@@ -50,7 +51,36 @@ export async function getContributions(year?: number): Promise<ContributionData>
   }
 }
 
-export async function getPublicRepos(): Promise<GitHubRepo[]> {
+async function getCommitCount(owner: string, repo: string): Promise<number> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/commits?per_page=1`,
+      {
+        headers: { Accept: "application/vnd.github.v3+json" },
+        next: { revalidate: 300 },
+      }
+    );
+    if (!response.ok) return 0;
+    const link = response.headers.get("link");
+    if (!link) {
+      const data = await response.json();
+      return Array.isArray(data) ? data.length : 0;
+    }
+    const match = link.match(/page=(\d+)>; rel="last"/);
+    return match ? parseInt(match[1], 10) : 1;
+  } catch {
+    return 0;
+  }
+}
+
+export async function getTotalContributions(): Promise<number> {
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 2023 }, (_, i) => currentYear - i);
+  const results = await Promise.all(years.map((y) => getContributions(y)));
+  return results.reduce((sum, r) => sum + r.total, 0);
+}
+
+export async function getPublicRepos(): Promise<(GitHubRepo & { commits: number })[]> {
   try {
     const response = await fetch(
       "https://api.github.com/users/vindusvisker/repos?per_page=100&sort=pushed&direction=desc",
@@ -58,14 +88,23 @@ export async function getPublicRepos(): Promise<GitHubRepo[]> {
         headers: {
           Accept: "application/vnd.github.v3+json",
         },
-        next: { revalidate: 3600 },
+        next: { revalidate: 300 },
       }
     );
 
     if (!response.ok) return [];
 
     const repos: GitHubRepo[] = await response.json();
-    return repos.filter((repo) => !repo.fork);
+    const filtered = repos.filter((repo) => !repo.fork);
+
+    const withCommits = await Promise.all(
+      filtered.map(async (repo) => ({
+        ...repo,
+        commits: await getCommitCount("vindusvisker", repo.name),
+      }))
+    );
+
+    return withCommits;
   } catch {
     return [];
   }
