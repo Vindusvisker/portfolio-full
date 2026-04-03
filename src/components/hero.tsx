@@ -40,20 +40,12 @@ export function Hero() {
           </div>
         </section>
       </div>
-      <section className="mx-auto max-w-3xl px-6 py-24">
+      <section className="-mt-16 mx-auto max-w-3xl px-6 py-24">
         <ScrollRevealText>
-          I build scalable web products that solve real problems, from SaaS platforms to AI integrated tools that actually ship to production. Currently a Junior Developer at Supercompany, where I&apos;m building trale.ai using Next.js, TypeScript, and Supabase. Bachelor&apos;s degree in Data Science from Noroff. When I&apos;m not coding, I&apos;m probably exercising, watching movies, or teaching AI agents to do my job only to spend even more time reviewing their work.
+          {"I build scalable web products that solve real problems, from SaaS platforms to AI integrated tools that actually ship to production.\nCurrently a Junior Developer at [Supercompany](https://supercompany.no), where I'm building [trale.ai](https://trale.ai) using Next.js, TypeScript, and Supabase. Bachelor's degree in Data Science from [Noroff](https://noroff.no).\nWhen I'm not coding, I'm probably exercising, watching movies, or teaching AI agents to do my job only to spend even more time reviewing their work.\nCheck out my [projects](/projects) or grab my [CV](/resume.pdf)."}
         </ScrollRevealText>
       </section>
 
-      <section className="mx-auto max-w-3xl px-6 pb-12">
-        <p className="text-base text-muted-foreground">
-          Check out my{" "}
-          <a href="/projects" className="text-foreground underline underline-offset-4 hover:text-muted-foreground transition-colors">projects</a>
-          {" "}or grab my{" "}
-          <a href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="text-foreground underline underline-offset-4 hover:text-muted-foreground transition-colors">CV</a>.
-        </p>
-      </section>
     </>
   );
 }
