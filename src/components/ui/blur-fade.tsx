@@ -79,7 +79,7 @@ export function BlurFade({
         exit="hidden"
         variants={combinedVariants}
         transition={{
-          delay: 0.04 + delay,
+          delay: delay,
           duration,
           ease: "easeOut",
           ...(shouldTransitionFilter ? { filter: { duration } } : {}),

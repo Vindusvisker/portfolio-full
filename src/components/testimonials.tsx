@@ -89,7 +89,7 @@ export function Testimonials() {
   return (
     <section className="mx-auto max-w-3xl px-6">
       <BlurFade delay={0.1} inView>
-        <h2 className="text-lg font-bold">What others say</h2>
+        <h2 className="text-xl font-bold">What others say</h2>
       </BlurFade>
       <BlurFade delay={0.2} inView>
       <div className="mt-8 overflow-hidden rounded-xl border border-border/50 bg-card" ref={emblaRef}>
@@ -97,11 +97,11 @@ export function Testimonials() {
           {testimonials.map((testimonial, i) => (
             <div key={i} className="min-w-0 flex-[0_0_100%] p-8">
               <Quote size={24} className="text-primary/40" aria-hidden="true" />
-              <blockquote className="mt-4 text-sm leading-relaxed text-card-foreground">
+              <blockquote className="mt-4 text-base leading-relaxed text-card-foreground">
                 &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
               <div className="mt-6">
-                <p className="text-sm font-medium">{testimonial.name}</p>
+                <p className="text-base font-medium">{testimonial.name}</p>
                 <p className="text-xs text-muted-foreground">
                   {testimonial.title || testimonial.handle}
                 </p>
