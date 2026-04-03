@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { SocialLinks } from "./social-links";
 import { Boxes } from "./ui/background-boxes";
+import { ScrollRevealText } from "./scroll-reveal-text";
 
 export function Hero() {
   return (
@@ -41,11 +42,10 @@ export function Hero() {
       </div>
       <div className="h-24" />
       <section className="relative z-10 -mt-32 mx-auto max-w-3xl px-6 pb-6">
-        <div className="slide-enter slide-enter-delay-3 space-y-4 text-base leading-relaxed text-foreground">
-          <p>
-            I build scalable web products that solve real problems, from SaaS platforms
-            to AI integrated tools that actually ship to production.
-          </p>
+        <div className="space-y-4">
+          <ScrollRevealText>
+            I build scalable web products that solve real problems, from SaaS platforms to AI integrated tools that actually ship to production.
+          </ScrollRevealText>
           <p>
             Currently a Junior Developer at{" "}
             <a href="https://supercompany.no" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-muted-foreground transition-colors">Supercompany</a>,
@@ -54,10 +54,9 @@ export function Hero() {
             {" "}using Next.js, TypeScript, and Supabase. Bachelor&apos;s degree in Data Science from{" "}
             <a href="https://noroff.no" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-muted-foreground transition-colors">Noroff</a>.
           </p>
-          <p>
-            When I&apos;m not coding, I&apos;m probably exercising, watching movies, or
-            teaching AI agents to do my job only to spend even more time reviewing their work.
-          </p>
+          <ScrollRevealText>
+            When I&apos;m not coding, I&apos;m probably exercising, watching movies, or teaching AI agents to do my job only to spend even more time reviewing their work.
+          </ScrollRevealText>
           <p>
             Check out my{" "}
             <a href="/projects" className="underline underline-offset-4 hover:text-muted-foreground transition-colors">projects</a>
