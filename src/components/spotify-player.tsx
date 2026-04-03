@@ -18,6 +18,28 @@ function timeAgo(dateString: string): string {
   return `${days}d ago`;
 }
 
+function SoundBars() {
+  return (
+    <div className="flex items-end gap-[3px] h-4">
+      {[1, 2, 3].map((i) => (
+        <span
+          key={i}
+          className="w-[3px] rounded-full bg-primary"
+          style={{
+            animation: `soundbar 0.8s ease-in-out ${i * 0.15}s infinite alternate`,
+          }}
+        />
+      ))}
+      <style jsx>{`
+        @keyframes soundbar {
+          0% { height: 4px; }
+          100% { height: 16px; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export function SpotifyPlayer() {
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,18 +91,16 @@ export function SpotifyPlayer() {
           <Music size={16} className="text-primary" />
           Recently Played
         </h3>
-        <div className="mt-4 space-y-1" role="status" aria-label="Loading tracks">
+        <div className="mt-4 rounded-xl border border-border/50 bg-card p-2 space-y-1">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-lg p-2">
-              <div className="skeleton h-11 w-11 shrink-0 rounded-md" />
+            <div key={i} className="flex items-center gap-4 rounded-lg p-3">
+              <div className="skeleton h-14 w-14 shrink-0 rounded-lg" />
               <div className="min-w-0 flex-1 space-y-2">
-                <div className="skeleton h-3 w-3/4 rounded" />
+                <div className="skeleton h-4 w-3/4 rounded" />
                 <div className="skeleton h-3 w-1/2 rounded" />
               </div>
-              <div className="skeleton h-3 w-10 shrink-0 rounded" />
             </div>
           ))}
-          <span className="sr-only">Loading recently played tracks...</span>
         </div>
       </div>
     );
@@ -106,54 +126,85 @@ export function SpotifyPlayer() {
         <Music size={16} className="text-primary" />
         Recently Played
       </h3>
-      <div className="mt-4 space-y-1">
-        {tracks.map((track, i) => (
-          <div
-            key={`${track.title}-${i}`}
-            className="group flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted/50"
-          >
-            <button
-              type="button"
-              className="relative h-11 w-11 shrink-0 cursor-pointer overflow-hidden rounded-md active:scale-[0.95]"
-              onClick={() => togglePlay(i, track.previewUrl)}
-              aria-label={playingIndex === i ? `Pause ${track.title}` : `Play preview of ${track.title}`}
-              disabled={!track.previewUrl}
+      <div className="mt-4 rounded-xl border border-border/50 bg-card p-2">
+        {tracks.map((track, i) => {
+          const isPlaying = playingIndex === i;
+          return (
+            <div
+              key={`${track.title}-${i}`}
+              className={`group flex items-center gap-4 rounded-lg p-3 transition-all ${
+                isPlaying
+                  ? "bg-primary/5"
+                  : "hover:bg-muted/50"
+              }`}
             >
-              <Image
-                src={track.albumImageUrl}
-                alt={track.album}
-                fill
-                sizes="44px"
-                className="object-cover"
-              />
-              {track.previewUrl && (
-                <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${playingIndex === i ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
-                  {playingIndex === i ? (
-                    <Pause size={16} className="text-white" />
-                  ) : (
-                    <Play size={16} className="text-white" />
-                  )}
-                </div>
-              )}
-            </button>
-            <a
-              href={track.songUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="min-w-0 flex-1 cursor-pointer"
-            >
-              <p className="truncate text-xs font-medium hover:underline">
-                {track.title}
-              </p>
-              <p className="truncate text-xs text-muted-foreground">
-                {track.artist}
-              </p>
-            </a>
-            <span className="shrink-0 text-xs text-muted-foreground">
-              {timeAgo(track.playedAt)}
-            </span>
-          </div>
-        ))}
+              <button
+                type="button"
+                className="relative h-14 w-14 shrink-0 cursor-pointer overflow-hidden rounded-lg shadow-sm transition-transform active:scale-[0.93]"
+                onClick={() => togglePlay(i, track.previewUrl)}
+                aria-label={
+                  isPlaying
+                    ? `Pause ${track.title}`
+                    : `Play preview of ${track.title}`
+                }
+                disabled={!track.previewUrl}
+              >
+                <Image
+                  src={track.albumImageUrl}
+                  alt={track.album}
+                  fill
+                  sizes="56px"
+                  className={`object-cover transition-transform duration-300 ${
+                    isPlaying ? "scale-110" : "group-hover:scale-105"
+                  }`}
+                />
+                {track.previewUrl && (
+                  <div
+                    className={`absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] transition-opacity ${
+                      isPlaying
+                        ? "opacity-100"
+                        : "opacity-0 group-hover:opacity-100"
+                    }`}
+                  >
+                    {isPlaying ? (
+                      <Pause size={18} className="text-white" />
+                    ) : (
+                      <Play size={18} className="text-white" />
+                    )}
+                  </div>
+                )}
+              </button>
+
+              <a
+                href={track.songUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="min-w-0 flex-1 cursor-pointer"
+              >
+                <p
+                  className={`truncate text-sm font-medium hover:underline ${
+                    isPlaying ? "text-primary" : ""
+                  }`}
+                >
+                  {track.title}
+                </p>
+                <p className="truncate text-xs text-muted-foreground mt-0.5">
+                  {track.artist} &middot; {track.album}
+                </p>
+              </a>
+
+              <div className="shrink-0 flex flex-col items-end gap-1">
+                {isPlaying ? (
+                  <SoundBars />
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    {timeAgo(track.playedAt)}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

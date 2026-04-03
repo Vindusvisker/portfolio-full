@@ -69,8 +69,17 @@ const testimonials = [
   },
 ];
 
+const CARD_COLORS = [
+  "oklch(0.95 0.02 230)",  // creamy blue
+  "oklch(0.95 0.02 80)",   // creamy beige
+  "oklch(0.95 0.02 145)",  // creamy green
+  "oklch(0.95 0.02 90)",   // creamy yellow
+  "oklch(0.95 0.02 320)",  // creamy lavender
+  "oklch(0.95 0.02 25)",   // creamy peach
+];
+
 export function Testimonials() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 40 }, [
     Autoplay({ delay: 5000, stopOnInteraction: true }),
   ]);
 
@@ -87,22 +96,23 @@ export function Testimonials() {
   const next = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
-    <section className="mx-auto max-w-3xl px-6">
+    <section className="-mt-8 mx-auto max-w-3xl px-6">
       <BlurFade delay={0.1} inView>
-        <h2 className="text-xl font-bold">What others say</h2>
-      </BlurFade>
-      <BlurFade delay={0.2} inView>
-      <div className="mt-8 overflow-hidden rounded-xl border border-border/50 bg-card" ref={emblaRef}>
+      <div
+        className="overflow-hidden rounded-xl border border-border/50 transition-colors duration-700"
+        ref={emblaRef}
+        style={{ backgroundColor: CARD_COLORS[selected % CARD_COLORS.length] }}
+      >
         <div className="flex">
           {testimonials.map((testimonial, i) => (
-            <div key={i} className="min-w-0 flex-[0_0_100%] p-8">
-              <Quote size={24} className="text-primary/40" aria-hidden="true" />
-              <blockquote className="mt-4 text-base leading-relaxed text-card-foreground">
+            <div key={i} className="flex min-w-0 flex-[0_0_100%] flex-col justify-center px-8 py-6">
+              <blockquote className="text-lg leading-relaxed text-neutral-800">
+                <Quote size={20} className="opacity-20 inline-block mr-1 -mt-1" aria-hidden="true" />
                 &ldquo;{testimonial.quote}&rdquo;
               </blockquote>
-              <div className="mt-6">
-                <p className="text-base font-medium">{testimonial.name}</p>
-                <p className="text-xs text-muted-foreground">
+              <div className="mt-4">
+                <p className="text-base font-medium text-neutral-900">{testimonial.name}</p>
+                <p className="text-xs text-neutral-500">
                   {testimonial.title || testimonial.handle}
                 </p>
               </div>
@@ -111,7 +121,7 @@ export function Testimonials() {
         </div>
       </div>
       </BlurFade>
-      <BlurFade delay={0.3} inView>
+      <BlurFade delay={0.2} inView>
       <div className="mt-4 flex items-center justify-end gap-3">
         <button
           onClick={prev}
