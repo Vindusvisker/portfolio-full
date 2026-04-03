@@ -18,9 +18,9 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full">
       {/* Logo blob + nav + socials blob */}
-      <nav aria-label="Main navigation" className="relative flex items-start justify-between">
+      <nav aria-label="Main navigation" className="pointer-events-none relative flex items-start justify-between">
         {/* Left: Logo blob + pill */}
-        <div className="flex items-start">
+        <div className="pointer-events-auto flex items-start">
           {/* Logo with curved background blob */}
           <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-sidebar px-6 py-4 pr-10">
             <Link
@@ -64,7 +64,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile toggle */}
-        <div className="mt-2 flex items-center gap-2 px-6 md:hidden">
+        <div className="pointer-events-auto mt-2 flex items-center gap-2 px-6 md:hidden">
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-border/50 bg-background/60 backdrop-blur-xl transition-colors hover:bg-background cursor-pointer active:scale-[0.98]"

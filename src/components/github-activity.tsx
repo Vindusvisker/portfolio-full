@@ -3,58 +3,93 @@
 import { useEffect, useState } from "react";
 import type { ContributionData, ContributionDay } from "@/lib/github";
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const DAYS = ["Mon", "Wed", "Fri"];
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
 
-const LEVEL_COLORS = {
-  light: [
-    "var(--muted)",
-    "oklch(0.75 0.1 145)",
-    "oklch(0.6 0.14 145)",
-    "oklch(0.5 0.16 145)",
-    "oklch(0.4 0.16 145)",
-  ],
-  dark: [
-    "var(--muted)",
-    "oklch(0.35 0.1 145)",
-    "oklch(0.45 0.14 145)",
-    "oklch(0.55 0.16 145)",
-    "oklch(0.65 0.16 145)",
-  ],
-};
+const LEVEL_COLORS = [
+  "transparent",
+  "oklch(0.35 0.1 145)",
+  "oklch(0.45 0.14 145)",
+  "oklch(0.55 0.16 145)",
+  "oklch(0.65 0.16 145)",
+];
 
-function getWeeks(days: ContributionDay[]) {
-  const weeks: ContributionDay[][] = [];
-  let currentWeek: ContributionDay[] = [];
+function groupByMonth(days: ContributionDay[]) {
+  const months: Map<string, ContributionDay[]> = new Map();
 
   for (const day of days) {
     const date = new Date(day.date);
-    const dow = date.getDay();
-
-    if (dow === 0 && currentWeek.length > 0) {
-      weeks.push(currentWeek);
-      currentWeek = [];
-    }
-    currentWeek.push(day);
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    if (!months.has(key)) months.set(key, []);
+    months.get(key)!.push(day);
   }
-  if (currentWeek.length > 0) weeks.push(currentWeek);
-  return weeks;
+
+  return Array.from(months.entries()).map(([key, monthDays]) => {
+    const [year, month] = key.split("-").map(Number);
+    return { year, month, days: monthDays };
+  });
 }
 
-function getMonthLabels(weeks: ContributionDay[][]) {
-  const labels: { label: string; col: number }[] = [];
-  let lastMonth = -1;
+function MonthGrid({ month, days }: { month: number; days: ContributionDay[] }) {
+  const dayMap = new Map(days.map((d) => [d.date, d]));
 
-  weeks.forEach((week, i) => {
-    const date = new Date(week[0].date);
-    const month = date.getMonth();
-    if (month !== lastMonth) {
-      labels.push({ label: MONTHS[month], col: i });
-      lastMonth = month;
-    }
-  });
+  // Find first day of month and total days
+  const year = days[0] ? new Date(days[0].date).getFullYear() : new Date().getFullYear();
+  const firstDay = new Date(year, month, 1);
+  const totalDays = new Date(year, month + 1, 0).getDate();
 
-  return labels;
+  // Monday = 0, Sunday = 6
+  let startDay = firstDay.getDay() - 1;
+  if (startDay < 0) startDay = 6;
+
+  const cells: (ContributionDay | null)[] = [];
+
+  // Empty cells before first day
+  for (let i = 0; i < startDay; i++) cells.push(null);
+
+  // Day cells
+  for (let d = 1; d <= totalDays; d++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    cells.push(dayMap.get(dateStr) || { date: dateStr, count: 0, level: 0 });
+  }
+
+  // Pad to complete grid
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const weeks: (ContributionDay | null)[][] = [];
+  for (let i = 0; i < cells.length; i += 7) {
+    weeks.push(cells.slice(i, i + 7));
+  }
+
+  return (
+    <div>
+      <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {MONTHS[month]}
+      </p>
+      <div className="grid grid-cols-7 gap-[3px]">
+        {DAYS.map((d) => (
+          <span key={d} className="text-center text-[9px] text-muted-foreground/60 mb-0.5">
+            {d.charAt(0)}
+          </span>
+        ))}
+        {weeks.flat().map((cell, i) =>
+          cell ? (
+            <div
+              key={i}
+              className="aspect-square rounded-[3px] border border-border/60 transition-colors"
+              style={{ backgroundColor: LEVEL_COLORS[cell.level] }}
+              title={`${cell.count} contributions on ${cell.date}`}
+            />
+          ) : (
+            <div key={i} />
+          )
+        )}
+      </div>
+    </div>
+  );
 }
 
 export function GitHubActivity() {
@@ -76,8 +111,7 @@ export function GitHubActivity() {
       .catch(() => setLoading(false));
   }, [selectedYear]);
 
-  const weeks = data ? getWeeks(data.days) : [];
-  const monthLabels = getMonthLabels(weeks);
+  const months = data ? groupByMonth(data.days) : [];
 
   return (
     <div className="w-full">
@@ -112,60 +146,24 @@ export function GitHubActivity() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="View vindusvisker's GitHub profile and contribution history"
-        className="mt-4 block w-full rounded-lg border border-border/50 bg-card p-4 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:shadow-md active:scale-[0.99]"
+        className="mt-4 block w-full overflow-hidden rounded-xl border border-border/50 cursor-pointer transition-all duration-200 hover:border-primary/30 hover:shadow-md active:scale-[0.99]"
       >
         {loading ? (
-          <div className="flex h-[120px] items-center justify-center">
-            <div className="skeleton h-full w-full rounded-md" />
+          <div className="grid grid-cols-3 sm:grid-cols-4 divide-x divide-y divide-border/40">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="p-4 space-y-2">
+                <div className="skeleton h-3 w-10 rounded" />
+                <div className="skeleton h-20 w-full rounded" />
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            {/* Month labels */}
-            <div className="relative text-xs text-muted-foreground" style={{ paddingLeft: 31, height: 16 }}>
-              {monthLabels.map((m, i) => (
-                <span
-                  key={i}
-                  className="absolute"
-                  style={{
-                    left: 31 + m.col * 16,
-                  }}
-                >
-                  {m.label}
-                </span>
-              ))}
-            </div>
-
-            {/* Grid */}
-            <div className="mt-1 flex gap-[3px]">
-              {/* Day labels */}
-              <div className="flex flex-col justify-between py-[2px] text-xs text-muted-foreground" style={{ width: 28 }}>
-                {DAYS.map((d) => (
-                  <span key={d} className="h-[13px] leading-[13px]">{d}</span>
-                ))}
+          <div className="grid grid-cols-3 sm:grid-cols-4 divide-x divide-y divide-border/40">
+            {months.map((m) => (
+              <div key={`${m.year}-${m.month}`} className="p-4">
+                <MonthGrid month={m.month} days={m.days} />
               </div>
-
-              {/* Weeks */}
-              <div className="flex gap-[3px]">
-                {weeks.map((week, wi) => (
-                  <div key={wi} className="flex flex-col gap-[3px]">
-                    {Array.from({ length: 7 }).map((_, di) => {
-                      const day = week.find((d) => new Date(d.date).getDay() === di);
-                      if (!day) return <div key={di} className="h-[13px] w-[13px]" />;
-                      return (
-                        <div
-                          key={di}
-                          className="h-[11px] w-[11px] rounded-[2px] transition-colors"
-                          style={{
-                            backgroundColor: `var(--contrib-${day.level}, ${LEVEL_COLORS.dark[day.level]})`,
-                          }}
-                          title={`${day.count} contributions on ${day.date}`}
-                        />
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         )}
       </a>
