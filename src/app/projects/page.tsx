@@ -1,6 +1,7 @@
 import { getPublicRepos, getTotalContributions } from "@/lib/github";
 import { ProjectCard } from "@/components/project-card";
 import { Boxes } from "@/components/ui/background-boxes";
+import { BlurFade } from "@/components/ui/blur-fade";
 import type { Metadata } from "next";
 import type { GitHubRepo } from "@/lib/github";
 
@@ -49,8 +50,11 @@ export default async function ProjectsPage() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-72 bg-gradient-to-t from-background to-transparent" />
       <Boxes className="opacity-20" />
       <section className="pointer-events-none relative z-10 mx-auto flex h-full max-w-3xl flex-col justify-end px-6 pb-8 pt-32">
-        <div className="pointer-events-auto slide-enter">
+        <div className="pointer-events-auto">
+          <BlurFade delay={0.1} inView>
           <h1 className="text-2xl font-extrabold tracking-tight">Projects</h1>
+          </BlurFade>
+          <BlurFade delay={0.2} inView>
           <p className="mt-2 text-sm text-muted-foreground">
             Open source work and experiments. All available on{" "}
             <a
@@ -63,17 +67,22 @@ export default async function ProjectsPage() {
             </a>
             .
           </p>
+          </BlurFade>
+          <BlurFade delay={0.3} inView>
           <div className="mt-4 flex gap-6 text-sm">
             <span className="text-foreground font-medium">{repos.length} <span className="text-muted-foreground font-normal">repos</span></span>
             <span className="text-foreground font-medium">{totalContributions.toLocaleString()} <span className="text-muted-foreground font-normal">contributions</span></span>
 <span className="text-foreground font-medium">{languages.size} <span className="text-muted-foreground font-normal">languages</span></span>
           </div>
+          </BlurFade>
         </div>
       </section>
     </div>
     <section className="mx-auto max-w-3xl px-6 py-8">
       <div>
-        <h2 className="mb-4 text-xs font-medium text-muted-foreground">Currently building</h2>
+        <BlurFade delay={0.1} inView>
+          <h2 className="mb-4 text-xs font-medium text-muted-foreground">Currently building</h2>
+        </BlurFade>
         <div className="space-y-3">
           {[
             {
@@ -94,37 +103,42 @@ export default async function ProjectsPage() {
               href: "https://relate.run",
               status: "In progress" as const,
             },
-          ].map((project) => (
-            <a
-              key={project.name}
-              href={project.href || "#"}
-              target={project.href ? "_blank" : undefined}
-              rel={project.href ? "noopener noreferrer" : undefined}
-              className="group flex items-center gap-4 rounded-lg border border-border/50 px-4 py-3 transition-colors hover:border-primary/30 cursor-pointer"
-            >
-              <span className="shrink-0 text-sm font-medium group-hover:text-primary transition-colors">{project.name}</span>
-              <span className="h-px flex-1 bg-border/50" />
-              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                project.status === "Production"
-                  ? "bg-green-500/10 text-green-400"
-                  : "bg-orange-500/10 text-orange-400"
-              }`}>{project.status}</span>
-            </a>
+          ].map((project, i) => (
+            <BlurFade key={project.name} delay={0.15 + i * 0.05} inView>
+              <a
+                href={project.href || "#"}
+                target={project.href ? "_blank" : undefined}
+                rel={project.href ? "noopener noreferrer" : undefined}
+                className="group flex items-center gap-4 rounded-lg border border-border/50 px-4 py-3 transition-colors hover:border-primary/30 cursor-pointer"
+              >
+                <span className="shrink-0 text-sm font-medium group-hover:text-primary transition-colors">{project.name}</span>
+                <span className="h-px flex-1 bg-border/50" />
+                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                  project.status === "Production"
+                    ? "bg-green-500/10 text-green-400"
+                    : "bg-orange-500/10 text-orange-400"
+                }`}>{project.status}</span>
+              </a>
+            </BlurFade>
           ))}
         </div>
       </div>
 
       <div className="mt-10 space-y-8">
-        <h2 className="text-xs font-medium text-muted-foreground">Open source</h2>
-        {groups.map((group) => (
-          <div key={group.label}>
-            <h2 className="mb-3 text-xs font-medium text-muted-foreground">{group.label}</h2>
-            <div className="space-y-2">
-              {group.repos.map((repo) => (
-                <ProjectCard key={repo.name} repo={repo} />
-              ))}
+        <BlurFade delay={0.1} inView>
+          <h2 className="text-xs font-medium text-muted-foreground">Open source</h2>
+        </BlurFade>
+        {groups.map((group, gi) => (
+          <BlurFade key={group.label} delay={0.1 + gi * 0.05} inView>
+            <div>
+              <h2 className="mb-3 text-xs font-medium text-muted-foreground">{group.label}</h2>
+              <div className="space-y-2">
+                {group.repos.map((repo) => (
+                  <ProjectCard key={repo.name} repo={repo} />
+                ))}
+              </div>
             </div>
-          </div>
+          </BlurFade>
         ))}
         {repos.length === 0 && (
           <p className="text-sm text-muted-foreground">

@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState } from "react";
+import { BlurFade } from "./ui/blur-fade";
 
 const testimonials = [
   {
@@ -87,7 +88,10 @@ export function Testimonials() {
 
   return (
     <section className="mx-auto max-w-3xl px-6">
-      <h2 className="slide-enter text-lg font-bold">What others say</h2>
+      <BlurFade delay={0.1} inView>
+        <h2 className="text-lg font-bold">What others say</h2>
+      </BlurFade>
+      <BlurFade delay={0.2} inView>
       <div className="mt-8 overflow-hidden rounded-xl border border-border/50 bg-card" ref={emblaRef}>
         <div className="flex">
           {testimonials.map((testimonial, i) => (
@@ -106,6 +110,8 @@ export function Testimonials() {
           ))}
         </div>
       </div>
+      </BlurFade>
+      <BlurFade delay={0.3} inView>
       <div className="mt-4 flex items-center justify-end gap-3">
         <button
           onClick={prev}
@@ -125,6 +131,7 @@ export function Testimonials() {
           <ChevronRight size={16} />
         </button>
       </div>
+      </BlurFade>
     </section>
   );
 }
