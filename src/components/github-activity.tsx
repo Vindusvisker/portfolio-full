@@ -96,7 +96,7 @@ export function GitHubActivity() {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 2023 }, (_, i) => currentYear - i);
 
-  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedYear, setSelectedYear] = useState(2025);
   const [data, setData] = useState<ContributionData | null>(null);
   const [loading, setLoading] = useState(true);
 

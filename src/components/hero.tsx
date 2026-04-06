@@ -50,7 +50,7 @@ export function Hero() {
       <section className="lg:-mt-16 mx-auto max-w-3xl px-6 py-12 lg:py-24">
         <BlurFade delay={0.15} inView>
           <ScrollRevealText>
-            {"I build scalable web products that solve real problems, from SaaS platforms to AI integrated tools that actually ship to production.\nCurrently a Junior Developer at [Supercompany](https://supercompany.no), where I'm building [trale.ai](https://trale.ai) using Next.js, TypeScript, and Supabase. Bachelor's degree in Data Science from [Noroff](https://noroff.no).\nWhen I'm not coding, I'm probably exercising, watching movies, or teaching AI agents to do my job only to spend even more time reviewing their work.\nCheck out my [projects](/projects) or grab my [CV](/resume.pdf)."}
+            {"I like solving real problems with code. Platforms, AI tools, automation, anything as long as it solves the problem.\nCurrently a Junior Developer at [Supercompany](https://supercompany.no), where I'm building [trale.ai](https://trale.ai). Studying Data Science at [Noroff](https://noroff.no) because I wanted to understand what's happening under the hood of the AI tools I build every day.\nWhen I'm not coding, I'm probably exercising, watching movies, or teaching AI agents to do my job only to spend even more time reviewing their work.\nCheck out my [projects](/projects) or grab my [CV](/resume.pdf)."}
           </ScrollRevealText>
         </BlurFade>
       </section>
