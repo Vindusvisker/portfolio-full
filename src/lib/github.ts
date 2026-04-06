@@ -80,6 +80,7 @@ export async function getTotalContributions(): Promise<number> {
   return results.reduce((sum, r) => sum + r.total, 0);
 }
 
+
 export async function getPublicRepos(): Promise<(GitHubRepo & { commits: number })[]> {
   try {
     const response = await fetch(

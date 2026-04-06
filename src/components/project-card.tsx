@@ -15,7 +15,7 @@ const languageColors: Record<string, string> = {
 
 export function ProjectCard({ repo }: { repo: GitHubRepo & { commits?: number } }) {
   return (
-    <div className="group flex items-center gap-4 rounded-lg px-3 py-2 transition-colors hover:bg-accent">
+    <div className="group flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg px-3 py-2 transition-colors hover:bg-accent">
       <a
         href={repo.html_url}
         target="_blank"
@@ -24,8 +24,8 @@ export function ProjectCard({ repo }: { repo: GitHubRepo & { commits?: number } 
       >
         {repo.name}
       </a>
-      <span className="h-px flex-1 bg-border/50" />
-      <div className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
+      <span className="hidden h-px flex-1 bg-border/50 sm:block" />
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
         {repo.homepage && (
           <a
             href={repo.homepage}

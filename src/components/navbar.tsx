@@ -5,10 +5,12 @@ import { usePathname } from "next/navigation";
 import { FileText } from "lucide-react";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Logo } from "./logo";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
+  { href: "/stack", label: "Stack" },
 ];
 
 export function Navbar() {
@@ -25,9 +27,9 @@ export function Navbar() {
           <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-sidebar px-6 py-4 pr-10">
             <Link
               href="/"
-              className="flex min-h-[44px] items-center text-sm font-bold tracking-tight transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
+              className="flex min-h-[44px] items-center transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
             >
-              mruud.com
+              <Logo size={32} />
             </Link>
             {/* Concave curve connecting blob to top strip */}
             <div className="navbar-concave-curve" />
@@ -78,7 +80,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="mx-6 mt-2 rounded-2xl border border-border/50 bg-background/60 px-6 py-4 backdrop-blur-xl md:hidden">
+        <div className="absolute left-6 right-6 mt-2 rounded-2xl border border-border/50 bg-background/80 px-6 py-4 backdrop-blur-xl md:hidden shadow-lg">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link

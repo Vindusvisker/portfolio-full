@@ -1,9 +1,14 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
-import { useCallback, useEffect, useState } from "react";
+import { useRef, useState } from "react";
+import { Autoplay, EffectCreative, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { SwiperRef } from "swiper/react";
+import "swiper/css";
+import "swiper/css/effect-creative";
+import "swiper/css/pagination";
+import "swiper/css/autoplay";
 import { BlurFade } from "./ui/blur-fade";
 
 const testimonials = [
@@ -79,68 +84,94 @@ const CARD_COLORS = [
 ];
 
 export function Testimonials() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 40 }, [
-    Autoplay({ delay: 5000, stopOnInteraction: true }),
-  ]);
-
+  const swiperRef = useRef<SwiperRef>(null);
   const [selected, setSelected] = useState(0);
 
-  useEffect(() => {
-    if (!emblaApi) return;
-    const onSelect = () => setSelected(emblaApi.selectedScrollSnap());
-    emblaApi.on("select", onSelect);
-    return () => { emblaApi.off("select", onSelect); };
-  }, [emblaApi]);
-
-  const prev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const next = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-
   return (
-    <section className="-mt-8 mx-auto max-w-3xl px-6">
-      <BlurFade delay={0.1} inView>
-      <div
-        className="overflow-hidden rounded-xl border border-border/50 transition-colors duration-700"
-        ref={emblaRef}
-        style={{ backgroundColor: CARD_COLORS[selected % CARD_COLORS.length] }}
-      >
-        <div className="flex">
+    <section className="mt-8 mx-auto max-w-3xl px-6">
+      <BlurFade delay={0.05} inView>
+        <style>{`
+          .testimonial-swiper {
+            padding-bottom: 0 !important;
+          }
+          .testimonial-swiper .swiper-slide {
+            border-radius: 12px;
+            overflow: hidden;
+          }
+          .testimonial-swiper .swiper-pagination {
+            display: none;
+          }
+        `}</style>
+        <Swiper
+          ref={swiperRef}
+          effect="creative"
+          grabCursor
+          loop
+          centeredSlides
+          autoplay={{ delay: 5000, disableOnInteraction: true }}
+          creativeEffect={{
+            prev: {
+              shadow: true,
+              origin: "left center",
+              translate: ["-5%", 0, -200],
+              rotate: [0, 100, 0],
+            },
+            next: {
+              origin: "right center",
+              translate: ["5%", 0, -200],
+              rotate: [0, -100, 0],
+            },
+          }}
+          modules={[EffectCreative, Pagination, Autoplay]}
+          className="testimonial-swiper"
+          onSlideChange={(swiper) => setSelected(swiper.realIndex)}
+        >
           {testimonials.map((testimonial, i) => (
-            <div key={i} className="flex min-w-0 flex-[0_0_100%] flex-col justify-center px-8 py-6">
-              <blockquote className="text-lg leading-relaxed text-neutral-800">
-                <Quote size={20} className="opacity-20 inline-block mr-1 -mt-1" aria-hidden="true" />
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <div className="mt-4">
-                <p className="text-base font-medium text-neutral-900">{testimonial.name}</p>
-                <p className="text-xs text-neutral-500">
-                  {testimonial.title || testimonial.handle}
-                </p>
+            <SwiperSlide key={i}>
+              <div
+                className="flex flex-col justify-center px-8 py-6 border border-border/50"
+                style={{
+                  backgroundColor: CARD_COLORS[i % CARD_COLORS.length],
+                  minHeight: 220,
+                }}
+              >
+                <blockquote className="text-lg leading-relaxed text-neutral-800">
+                  <Quote size={20} className="opacity-20 inline-block mr-1 -mt-1" aria-hidden="true" />
+                  &ldquo;{testimonial.quote}&rdquo;
+                </blockquote>
+                <div className="mt-4">
+                  <p className="text-base font-medium text-neutral-900">{testimonial.name}</p>
+                  <p className="text-xs text-neutral-500">
+                    {testimonial.title || testimonial.handle}
+                  </p>
+                </div>
               </div>
-            </div>
+            </SwiperSlide>
           ))}
-        </div>
-      </div>
+        </Swiper>
       </BlurFade>
-      <BlurFade delay={0.2} inView>
-      <div className="mt-4 flex items-center justify-end gap-3">
-        <button
-          onClick={prev}
-          className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer active:scale-[0.98]"
-          aria-label="Previous testimonial"
-        >
-          <ChevronLeft size={16} />
-        </button>
-        <span className="text-xs tabular-nums text-muted-foreground">
-          {selected + 1} / {testimonials.length}
-        </span>
-        <button
-          onClick={next}
-          className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer active:scale-[0.98]"
-          aria-label="Next testimonial"
-        >
-          <ChevronRight size={16} />
-        </button>
-      </div>
+      <BlurFade delay={0.1} inView>
+        <div className="mt-4 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); swiperRef.current?.swiper.slidePrev(); }}
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer active:scale-[0.98]"
+            aria-label="Previous testimonial"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span className="text-xs tabular-nums text-muted-foreground">
+            {selected + 1} / {testimonials.length}
+          </span>
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); swiperRef.current?.swiper.slideNext(); }}
+            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground cursor-pointer active:scale-[0.98]"
+            aria-label="Next testimonial"
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
       </BlurFade>
     </section>
   );

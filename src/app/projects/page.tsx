@@ -1,4 +1,5 @@
 import { getPublicRepos, getTotalContributions } from "@/lib/github";
+import Link from "next/link";
 import { ProjectCard } from "@/components/project-card";
 import { Boxes } from "@/components/ui/background-boxes";
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -42,7 +43,6 @@ export default async function ProjectsPage() {
     getTotalContributions(),
   ]);
   const groups = groupByYearMonth(repos);
-  const languages = new Set(repos.map((r) => r.language).filter(Boolean));
 
   return (
     <>
@@ -51,10 +51,10 @@ export default async function ProjectsPage() {
       <Boxes className="opacity-20" />
       <section className="pointer-events-none relative z-10 mx-auto flex h-full max-w-3xl flex-col justify-end px-6 pb-8 pt-32">
         <div className="pointer-events-auto">
-          <BlurFade delay={0.1} inView>
+          <BlurFade delay={0.05} inView>
           <h1 className="text-2xl font-extrabold tracking-tight">Projects</h1>
           </BlurFade>
-          <BlurFade delay={0.2} inView>
+          <BlurFade delay={0.1} inView>
           <p className="mt-2 text-sm text-muted-foreground">
             Open source work and experiments. All available on{" "}
             <a
@@ -68,11 +68,11 @@ export default async function ProjectsPage() {
             .
           </p>
           </BlurFade>
-          <BlurFade delay={0.3} inView>
+          <BlurFade delay={0.15} inView>
           <div className="mt-4 flex gap-6 text-sm">
             <span className="text-foreground font-medium">{repos.length} <span className="text-muted-foreground font-normal">repos</span></span>
             <span className="text-foreground font-medium">{totalContributions.toLocaleString()} <span className="text-muted-foreground font-normal">contributions</span></span>
-<span className="text-foreground font-medium">{languages.size} <span className="text-muted-foreground font-normal">languages</span></span>
+            <Link href="/stack" className="text-primary underline underline-offset-4 transition-colors hover:text-primary/80 cursor-pointer font-medium">My stack</Link>
           </div>
           </BlurFade>
         </div>
@@ -80,7 +80,7 @@ export default async function ProjectsPage() {
     </div>
     <section className="mx-auto max-w-3xl px-6 py-8">
       <div>
-        <BlurFade delay={0.1} inView>
+        <BlurFade delay={0.05} inView>
           <h2 className="mb-4 text-xs font-medium text-muted-foreground">Currently building</h2>
         </BlurFade>
         <div className="space-y-3">
@@ -104,7 +104,7 @@ export default async function ProjectsPage() {
               status: "In progress" as const,
             },
           ].map((project, i) => (
-            <BlurFade key={project.name} delay={0.15 + i * 0.05} inView>
+            <BlurFade key={project.name} delay={0.08 + i * 0.03} inView>
               <a
                 href={project.href || "#"}
                 target={project.href ? "_blank" : undefined}
@@ -124,12 +124,32 @@ export default async function ProjectsPage() {
         </div>
       </div>
 
+      <div className="mt-10">
+        <BlurFade delay={0.05} inView>
+          <h2 className="mb-4 text-xs font-medium text-muted-foreground">Freelance</h2>
+        </BlurFade>
+        <div className="space-y-3">
+          <BlurFade delay={0.08} inView>
+            <a
+              href="https://sendpilot.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-4 rounded-lg border border-border/50 px-4 py-3 transition-colors hover:border-primary/30 cursor-pointer"
+            >
+              <span className="shrink-0 text-sm font-medium group-hover:text-primary transition-colors">sendpilot.ai</span>
+              <span className="h-px flex-1 bg-border/50" />
+              <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground">Summer 2024</span>
+            </a>
+          </BlurFade>
+        </div>
+      </div>
+
       <div className="mt-10 space-y-8">
-        <BlurFade delay={0.1} inView>
+        <BlurFade delay={0.05} inView>
           <h2 className="text-xs font-medium text-muted-foreground">Open source</h2>
         </BlurFade>
         {groups.map((group, gi) => (
-          <BlurFade key={group.label} delay={0.1 + gi * 0.05} inView>
+          <BlurFade key={group.label} delay={0.05 + gi * 0.03} inView>
             <div>
               <h2 className="mb-3 text-xs font-medium text-muted-foreground">{group.label}</h2>
               <div className="space-y-2">

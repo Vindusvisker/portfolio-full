@@ -115,7 +115,7 @@ export function GitHubActivity() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h3 className="text-sm font-medium">
           GitHub Contributions
           {data && !loading && (

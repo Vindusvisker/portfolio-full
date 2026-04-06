@@ -1,114 +1,165 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef, useMemo } from "react";
+import { motion, useInView, useScroll, useTransform } from "motion/react";
+import { cn } from "@/lib/utils";
 
-// Parses text with [label](url) markdown-style links into tokens
-function parseTokens(text: string): { word: string; href?: string }[] {
-  const tokens: { word: string; href?: string }[] = [];
+interface Token {
+  word: string;
+  href?: string;
+  isSpace?: boolean;
+  index: number;
+}
+
+function parseTokens(text: string): Token[] {
+  const tokens: Token[] = [];
   const regex = /\[([^\]]+)\]\(([^)]+)\)/g;
   let lastIndex = 0;
+  let tokenIndex = 0;
   let match;
 
   while ((match = regex.exec(text)) !== null) {
-    // Plain words before the link
-    const before = text.slice(lastIndex, match.index).trim();
+    const before = text.slice(lastIndex, match.index);
     if (before) {
-      for (const w of before.split(/\s+/)) tokens.push({ word: w });
+      for (const part of before.split(/(\s+)/)) {
+        if (part.length === 0) continue;
+        tokens.push({
+          word: part,
+          isSpace: /^\s+$/.test(part),
+          index: tokenIndex++,
+        });
+      }
     }
-    // Link words
     const linkWords = match[1].split(/\s+/);
-    linkWords.forEach((w) => tokens.push({ word: w, href: match![2] }));
+    linkWords.forEach((w) =>
+      tokens.push({ word: w, href: match![2], index: tokenIndex++ })
+    );
     lastIndex = regex.lastIndex;
   }
 
-  // Remaining plain words
-  const remaining = text.slice(lastIndex).trim();
+  const remaining = text.slice(lastIndex);
   if (remaining) {
-    for (const w of remaining.split(/\s+/)) tokens.push({ word: w });
+    for (const part of remaining.split(/(\s+)/)) {
+      if (part.length === 0) continue;
+      tokens.push({
+        word: part,
+        isSpace: /^\s+$/.test(part),
+        index: tokenIndex++,
+      });
+    }
   }
 
   return tokens;
 }
 
-const LINK_COLOR = "#a8c7d4";
-const CTA_LINK_COLOR = "#b5d4a8";
-const MUTED_COLOR = "#1e1e1e";
-
 export function ScrollRevealText({ children }: { children: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, {
+    amount: 0.3,
+    once: false,
+  });
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
 
-    const words = container.querySelectorAll<HTMLElement>("[data-word]");
-    const totalWords = words.length;
+  const rotation = useTransform(scrollYProgress, [0, 0.5, 1], [2, 0, 0]);
 
-    const onScroll = () => {
-      const rect = container.getBoundingClientRect();
-      const viewportH = window.innerHeight;
+  const paragraphs = useMemo(() => {
+    return children.split("\n").map((para) => parseTokens(para.trim()));
+  }, [children]);
 
-      const progress = 1 - rect.top / (viewportH * 0.66);
-      const clamped = Math.max(0, Math.min(1, progress));
+  const containerVariants = {
+    hidden: {
+      opacity: 0,
+      transition: {
+        staggerChildren: 0.02,
+        staggerDirection: -1,
+      },
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.03,
+        delayChildren: 0.05,
+      },
+    },
+  };
 
-      words.forEach((word, i) => {
-        const wordStart = i / totalWords;
-        const wordEnd = (i + 1) / totalWords;
-        const wordProgress = Math.max(0, Math.min(1, (clamped - wordStart) / (wordEnd - wordStart)));
-        const linkType = word.dataset.link;
-
-        if (wordProgress > 0.5) {
-          word.style.color = linkType === "cta" ? CTA_LINK_COLOR : linkType === "true" ? LINK_COLOR : "var(--foreground)";
-        } else {
-          word.style.color = MUTED_COLOR;
-        }
-      });
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const paragraphs = children.split("\n");
+  const wordVariants = {
+    hidden: {
+      opacity: 0.1,
+      filter: "blur(4px)",
+      y: 12,
+    },
+    visible: {
+      opacity: 1,
+      filter: "blur(0px)",
+      y: 0,
+      transition: {
+        damping: 25,
+        stiffness: 100,
+        mass: 1,
+        duration: 0.6,
+      },
+    },
+  };
 
   return (
-    <div ref={containerRef} className="space-y-6 text-2xl font-bold leading-snug md:text-4xl">
-      {paragraphs.map((para, pi) => {
-        const tokens = parseTokens(para.trim());
-        return (
+    <motion.div
+      ref={containerRef}
+      style={{ rotate: rotation }}
+      className="transform-gpu"
+    >
+      <motion.div
+        className="space-y-6 text-xl font-bold leading-snug md:text-3xl"
+        variants={containerVariants}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+      >
+        {paragraphs.map((tokens, pi) => (
           <p key={pi}>
-            {tokens.map((token, wi) =>
-              token.href ? (
-                <span key={`${pi}-${wi}`} className="inline-block">
+            {tokens.map((token) =>
+              token.isSpace ? (
+                <span key={`s-${token.index}`}>{token.word}</span>
+              ) : token.href ? (
+                <motion.span
+                  key={`w-${token.index}`}
+                  className="inline-block"
+                  variants={wordVariants}
+                >
                   <a
                     href={token.href}
                     target={token.href.startsWith("/") ? undefined : "_blank"}
-                    rel={token.href.startsWith("/") ? undefined : "noopener noreferrer"}
-                    data-word
-                    data-link={token.href.startsWith("/") ? "cta" : "true"}
-                    className="underline underline-offset-4 transition-colors duration-150 cursor-pointer"
-                    style={{ color: MUTED_COLOR }}
+                    rel={
+                      token.href.startsWith("/")
+                        ? undefined
+                        : "noopener noreferrer"
+                    }
+                    className={cn(
+                      "underline underline-offset-4 transition-colors duration-150 cursor-pointer",
+                      token.href.startsWith("/")
+                        ? "text-green-400/80 hover:text-green-400"
+                        : "text-blue-400/80 hover:text-blue-400"
+                    )}
                   >
                     {token.word}
                   </a>
-                  {"\u00A0"}
-                </span>
+                </motion.span>
               ) : (
-                <span
-                  key={`${pi}-${wi}`}
-                  data-word
-                  className="inline-block transition-colors duration-150"
-                  style={{ color: MUTED_COLOR }}
+                <motion.span
+                  key={`w-${token.index}`}
+                  className="inline-block"
+                  variants={wordVariants}
                 >
                   {token.word}
-                  {"\u00A0"}
-                </span>
+                </motion.span>
               )
             )}
           </p>
-        );
-      })}
-    </div>
+        ))}
+      </motion.div>
+    </motion.div>
   );
 }
