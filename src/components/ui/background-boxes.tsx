@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
+const BoxesCore = ({ className, ...rest }: { className?: string }) => {
   const rows = new Array(150).fill(1);
   const cols = new Array(100).fill(1);
-  let colors = [
+  const colors = [
     "#93c5fd",
     "#f9a8d4",
     "#86efac",
@@ -73,4 +73,20 @@ export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
   );
 };
 
-export const Boxes = React.memo(BoxesCore);
+const BoxesMemo = React.memo(BoxesCore);
+
+export function Boxes({ className }: { className?: string }) {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    setIsDesktop(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  if (!isDesktop) return null;
+
+  return <BoxesMemo className={className} />;
+}

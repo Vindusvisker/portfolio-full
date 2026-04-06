@@ -11,11 +11,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://mruud.com"),
   title: "Marcus Ruud - Developer",
   description:
-    "I'm Marcus Ruud, a developer building scalable SaaS, AI-integrated tools, and efficient digital products.",
+    "I'm Marcus Ruud, a developer who likes solving real problems with code. Platforms, AI tools, automation.",
   openGraph: {
     title: "Marcus Ruud - Developer",
     description:
-      "Developer building scalable SaaS, AI-integrated tools, and efficient digital products.",
+      "Developer who likes solving real problems with code. Platforms, AI tools, automation.",
     url: "https://mruud.com",
     siteName: "Marcus Ruud",
     type: "website",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Marcus Ruud - Developer",
     description:
-      "Developer building scalable SaaS, AI-integrated tools, and efficient digital products.",
+      "Developer who likes solving real problems with code. Platforms, AI tools, automation.",
   },
 };
 
