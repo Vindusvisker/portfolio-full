@@ -31,7 +31,7 @@ const work: WorkItem[] = [
     plate: "#15120f",
     brightness: 0.06,
     fit: "contain",
-    aspect: "aspect-square",
+    aspect: "aspect-square lg:w-[78%]",
     place: "md:col-span-8 md:col-start-2",
   },
   {
@@ -44,7 +44,7 @@ const work: WorkItem[] = [
     image: "/projects/lerret-print.jpg",
     plate: "#0a140c",
     brightness: 0.06,
-    aspect: "aspect-square",
+    aspect: "aspect-square lg:w-[85%]",
     place: "md:col-span-7 md:col-start-5 md:mt-[4vh] lg:mt-[6vh]",
   },
   {

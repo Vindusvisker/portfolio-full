@@ -64,11 +64,12 @@
   }
 }
 
-/* Crumpled paper over the blueprint blue (public/home/paper.jpg, rendered from an SVG lighting filter) */
+/* Crumpled paper over the near-black board (public/home/paper.jpg, rendered from an SVG lighting filter).
+   Overlay keeps the base dark while letting the creases show; multiply would go flat black. */
 .board-grid {
   background: url("/home/paper.jpg") center / cover no-repeat;
-  mix-blend-mode: multiply;
-  opacity: 0.9;
+  mix-blend-mode: overlay;
+  opacity: 0.75;
 }
 
 /* White die-cut outline for stickers with transparent edges */

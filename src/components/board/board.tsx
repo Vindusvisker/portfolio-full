@@ -41,7 +41,7 @@ export async function Board() {
   return (
     <section
       aria-label="Sticker board"
-      className="relative h-dvh overflow-hidden bg-[#1a3f8a]"
+      className="relative h-dvh overflow-hidden bg-[#202022]"
     >
       <Canvas>
         <BubbleProvider>

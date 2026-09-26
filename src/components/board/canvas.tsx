@@ -313,7 +313,7 @@ export function Canvas({ children }: CanvasProps) {
       </div>
 
       {/* Title block in the corner, the way a drawing sheet has one: bottom-right */}
-      <div className="pointer-events-none absolute bottom-5 right-5 z-30 hidden divide-x divide-[#f2efe8]/30 border border-[#f2efe8]/30 bg-[#0d2a63]/60 font-mono text-[10px] uppercase tracking-wider text-[#f2efe8]/70 backdrop-blur-sm md:flex">
+      <div className="pointer-events-none absolute bottom-5 right-5 z-30 hidden divide-x divide-[#f2efe8]/30 border border-[#f2efe8]/30 bg-[#0a0a0b]/70 font-mono text-[10px] uppercase tracking-wider text-[#f2efe8]/70 backdrop-blur-sm md:flex">
         <div className="px-3 py-1.5">
           <div className="text-[8px] opacity-60">drawing</div>
           <div className="font-bold text-[#f2efe8]">Marcus Ruud · Life</div>

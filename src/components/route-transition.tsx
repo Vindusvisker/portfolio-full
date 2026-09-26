@@ -23,7 +23,7 @@ interface Theme {
  * board pushes in, the sphere grows, the star field drops out of warp.
  */
 const THEMES: Record<string, Theme> = {
-  "/": { bg: "#1a3f8a", hold: 0.12, material: "blueprint", side: "left" },
+  "/": { bg: "#202022", hold: 0.12, material: "blueprint", side: "left" },
   "/projects": { bg: "#f2ede4", hold: 0.12, material: "cream", side: "right" },
   "/stack": { bg: "#050505", hold: 0.12, material: "dark", side: "right" },
 };
