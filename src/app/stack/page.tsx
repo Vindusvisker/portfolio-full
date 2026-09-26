@@ -1,5 +1,7 @@
 import { BlurFade } from "@/components/ui/blur-fade";
 import { StackSection } from "@/components/stack-section";
+import { StackGlobe } from "@/components/stack/stack-globe";
+import { SectionTitle } from "@/components/projects/section-title";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -124,28 +126,31 @@ const stack = [
   },
 ];
 
+const HERO_TITLE = "Stack. The tools I build with.";
+
+const globeItems = stack.flatMap((section) =>
+  section.items.map((item) => ({ ...item, category: section.category })),
+);
+
 export default function StackPage() {
   return (
     <>
-      <section className="mx-auto max-w-3xl px-6 pb-4 pt-32">
-        <BlurFade delay={0.05} inView>
-          <h1 className="font-mono text-2xl font-bold tracking-tight">Stack</h1>
-        </BlurFade>
-        <BlurFade delay={0.1} inView>
-          <p className="mt-2 text-sm text-muted-foreground">
-            The tools and technologies I use to build products.
-          </p>
-        </BlurFade>
+      <SectionTitle initial={HERO_TITLE} />
+      {/* The globe owns the first screen; the headline sits in the header like on the projects page */}
+      <section data-section-title={HERO_TITLE} className="h-svh min-h-[600px] w-full pt-28 md:pt-24">
+        <StackGlobe items={globeItems} />
       </section>
-      <section className="mx-auto max-w-3xl px-6 py-8">
+      <section id="stack-list" className="mx-auto max-w-3xl px-6 py-8 scroll-mt-24">
         <div className="space-y-16">
           {stack.map((section, i) => (
             <BlurFade key={section.category} delay={0.05 + i * 0.03} inView>
-              <StackSection
-                category={section.category}
-                description={section.description}
-                items={section.items}
-              />
+              <div data-section-title={`Stack. ${section.category}.`}>
+                <StackSection
+                  category={section.category}
+                  description={section.description}
+                  items={section.items}
+                />
+              </div>
             </BlurFade>
           ))}
         </div>

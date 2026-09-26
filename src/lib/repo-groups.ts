@@ -10,6 +10,10 @@ export interface RepoRow {
   language: string;
   commits: number;
   ago: string;
+  /** "Mar 2023": when the repo was created. */
+  born: string;
+  /** "Jul 2024": the last push. */
+  lastSeen: string;
   href: string;
   homepage: string | null;
 }
@@ -33,6 +37,9 @@ function ago(iso: string) {
   return `${Math.floor(days / 365)}y ago`;
 }
 
+const monthYear = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
+
 function toRow(r: Repo): RepoRow {
   return {
     id: r.name,
@@ -41,6 +48,8 @@ function toRow(r: Repo): RepoRow {
     language: r.language ?? "misc",
     commits: r.commits ?? 0,
     ago: ago(r.pushed_at),
+    born: monthYear(r.created_at),
+    lastSeen: monthYear(r.pushed_at),
     href: r.html_url,
     homepage: r.homepage || null,
   };

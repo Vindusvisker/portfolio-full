@@ -11,18 +11,22 @@ const smoothstep = (lo: number, hi: number, v: number) => {
   return x * x * (3 - 2 * x);
 };
 
-type SpiralRow = RepoRow & { tag: string };
+type SpiralRow = RepoRow & { tag: string; alive: boolean };
+
+/** A small, stable tilt per card so the notes look pinned by hand. */
+const tilt = (i: number) => (((i * 7919) % 7) - 3) * 0.7;
+const tapeTilt = (i: number) => (((i * 104729) % 9) - 4) * 1.5;
 
 const RADIUS = 420;
 const CARD_W = 300;
-const CARD_H = 92;
-const SPACING = 106;
+const SPACING = 132;
 const PERSPECTIVE = 1000;
 const PER_TURN = 7;
 const CENTER_SCALE = 1.06;
 const EDGE_FADE = 0.3;
-const EDGE_BLUR = 5;
-const VH_PER_CARD = 16;
+const EDGE_BLUR = 3;
+const DEPTH_BLUR = 1.5;
+const VH_PER_CARD = 26;
 
 /**
  * The living repos on a helix, adapted from React Bits' InfiniteSpiral.
@@ -31,7 +35,10 @@ const VH_PER_CARD = 16;
  */
 export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: RepoRow[] }) {
   const rows = useMemo<SpiralRow[]>(
-    () => [...active.map((r) => ({ ...r, tag: "Breathing" })), ...dormant.map((r) => ({ ...r, tag: "Dormant" }))],
+    () => [
+      ...active.map((r) => ({ ...r, tag: "Breathing", alive: true })),
+      ...dormant.map((r) => ({ ...r, tag: "Dormant", alive: false })),
+    ],
     [active, dormant]
   );
   const n = rows.length;
@@ -42,7 +49,7 @@ export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: Re
   const target = useRef(0);
   const progress = useRef(0);
 
-  const { scrollYProgress } = useScroll({ target: wrapRef, offset: ["start 80%", "end end"] });
+  const { scrollYProgress } = useScroll({ target: wrapRef, offset: ["start 25%", "end end"] });
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     target.current = clamp(v, 0, 1) * Math.max(n - 1, 0);
   });
@@ -74,6 +81,7 @@ export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: Re
       const fit = Math.min(1, height / (SPACING * 5.5));
       const radius = Math.min(RADIUS, Math.max(24, (width - cardW) * 0.42)) * fit;
       const fadeStart = clamp(1 - EDGE_FADE, 0, 0.98);
+      const cy = height * 0.54;
 
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
@@ -87,11 +95,14 @@ export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: Re
         const z = Math.cos(rad) * radius;
         const depthScale = clamp(PERSPECTIVE / Math.max(PERSPECTIVE - z, 1), 0.82, 1.12);
         const depth = (z / Math.max(radius, 1) + 1) / 2;
-        const blur = EDGE_BLUR * Math.max(smoothstep(0.35, 1, edge), 0.7 * smoothstep(0.35, 1, 1 - depth));
+        const y = cy + offset * SPACING * fit;
+        const topFade = smoothstep(40, 160, y);
+        const back = smoothstep(0.45, 1, 1 - depth);
+        const blur = Math.max(EDGE_BLUR * smoothstep(0.5, 1, edge), DEPTH_BLUR * back);
 
         card.style.width = `${cardW}px`;
-        card.style.transform = `translate(-50%, -50%) translate3d(${x}px, ${offset * SPACING * fit}px, 0) scale(${scale * depthScale})`;
-        card.style.opacity = opacity.toFixed(3);
+        card.style.transform = `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0) rotate(${tilt(i)}deg) scale(${scale * depthScale})`;
+        card.style.opacity = (opacity * topFade * (1 - 0.35 * back)).toFixed(3);
         card.style.filter = blur > 0.01 ? `blur(${blur.toFixed(2)}px)` : "none";
         card.style.zIndex = String(Math.round(depth * 100000) + i);
         card.style.pointerEvents = opacity > 0.25 && focus > 0.15 ? "auto" : "none";
@@ -118,7 +129,7 @@ export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: Re
         </div>
         <div
           ref={stageRef}
-          className="relative min-h-0 w-full flex-1"
+          className="relative mt-8 min-h-0 w-full flex-1 overflow-hidden"
           style={{ perspective: `${PERSPECTIVE}px`, isolation: "isolate" }}
           role="list"
           aria-label="Repositories pushed in the last year"
@@ -133,22 +144,41 @@ export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: Re
               target="_blank"
               rel="noopener noreferrer"
               role="listitem"
-              className="absolute left-1/2 top-1/2 block rounded-md border border-border bg-card px-4 py-3 font-mono text-xs shadow-[0_14px_38px_rgb(0_0_0/0.12)] transition-colors hover:border-foreground/40"
-              style={{ width: CARD_W, height: CARD_H, willChange: "transform, opacity, filter", backfaceVisibility: "hidden" }}
+              className="group absolute left-1/2 top-0 block text-[#1a1713]"
+              style={{ width: CARD_W, willChange: "transform, opacity, filter", backfaceVisibility: "hidden" }}
             >
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="truncate text-sm font-bold">{r.name}</span>
-                <span className="shrink-0 rounded-sm border border-border px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span
+                aria-hidden="true"
+                className="tape absolute -top-2.5 left-1/2 z-10 h-5 w-16 -translate-x-1/2"
+                style={{ transform: `translateX(-50%) rotate(${tapeTilt(i)}deg)` }}
+              />
+              <div
+                className={`relative rounded-[3px] border px-4 pb-3 pt-4 shadow-[0_14px_28px_-12px_rgba(26,23,19,0.45)] transition-transform group-hover:-translate-y-0.5 ${
+                  r.alive ? "border-[#8a7a2a]/40 bg-[#f4e7a6]" : "border-[#1a1713]/30 bg-[#f7f3ea]"
+                }`}
+                style={{ backgroundImage: "linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 35%)" }}
+              >
+                <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-[#1a1713]/50">
+                  Note {String(i + 1).padStart(2, "0")} · {r.language}
+                </p>
+                <h4 className="mt-1 truncate font-display text-[22px] font-bold uppercase leading-none tracking-tight">{r.name}</h4>
+                <p className="mt-2 truncate font-sans text-[13px] leading-snug text-[#1a1713]/80">
+                  {r.description || "No description. Speaks for itself."}
+                </p>
+                <p className="mt-2.5 flex items-baseline justify-between border-t border-[#1a1713]/15 pt-2 font-mono text-[11px] tabular-nums text-[#1a1713]/60">
+                  <span>{r.commits > 0 ? `${r.commits} commits` : "Fresh"}</span>
+                  <span>{r.ago}</span>
+                </p>
+                <span
+                  aria-hidden="true"
+                  className={`absolute right-3 top-3 rounded-[2px] border-[1.5px] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.18em] mix-blend-multiply ${
+                    r.alive ? "rotate-[7deg] border-[#b3402a] text-[#b3402a]" : "-rotate-[5deg] border-[#1a1713]/55 text-[#1a1713]/55"
+                  }`}
+                >
                   {r.tag}
                 </span>
+                <span className="sr-only">{r.tag}</span>
               </div>
-              <p className="mt-1.5 line-clamp-2 min-h-[2.6em] leading-snug text-muted-foreground">
-                {r.description || "No description."}
-              </p>
-              <p className="mt-1.5 tabular-nums text-muted-foreground">
-                {r.language}
-                {r.commits > 0 ? ` · ${r.commits}` : ""} · {r.ago}
-              </p>
             </a>
           ))}
         </div>

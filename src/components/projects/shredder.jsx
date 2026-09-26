@@ -1,8 +1,9 @@
 // Shredder from React Bits (reactbits.dev), JavaScript + CSS variant, kept
-// as-is apart from one addition: a controlled `shredCount` prop that feeds
+// as-is apart from two additions: a controlled `shredCount` prop that feeds
 // rows through the rollers from outside (bottom row first) and brings them
-// back when it drops, used to shred on scroll. Its styles live in globals.css
-// under "Shredder".
+// back when it drops, used to shred on scroll; and a `pile` flag that lets
+// the strips land and heap up under the rollers instead of fading away.
+// Its styles live in globals.css under "Shredder".
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 
@@ -19,6 +20,8 @@ const STAGGER = 0.035;
 const ENTER = 22;
 const HYSTERESIS = 8;
 const DEG = Math.PI / 180;
+const BIN = 16;
+const HEAP_ADD = [0.22, 0.5, 1, 0.5, 0.22];
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const ease = (from, to, dt, tau) => from + (to - from) * (1 - Math.exp(-dt / tau));
@@ -194,6 +197,7 @@ export default function Shredder({
   color = '#f5f5f5',
   disabled = false,
   shredCount,
+  pile = false,
   className = ''
 }) {
   const [order, setOrder] = useState(() => items.map(item => item.id));
@@ -224,7 +228,8 @@ export default function Shredder({
     lift,
     onShred,
     onReorder,
-    disabled
+    disabled,
+    pile
   };
   const sim = useRef({
     raf: 0,
@@ -238,8 +243,49 @@ export default function Shredder({
     timers: new Set(),
     dpr: 1,
     cw: 0,
-    ch: 0
+    ch: 0,
+    heaps: new Map(),
+    floor: new Float32Array(0),
+    heapDirty: false
   });
+
+  // Strips that landed are painted once into a heap canvas per row, so the
+  // per-frame loop only ever moves the ones still in the air.
+  const heapFor = key => {
+    const s = sim.current;
+    let heap = s.heaps.get(key);
+    if (!heap) {
+      const canvas = document.createElement('canvas');
+      canvas.width = canvasRef.current.width;
+      canvas.height = canvasRef.current.height;
+      heap = { canvas, adds: [] };
+      s.heaps.set(key, heap);
+    }
+    return heap;
+  };
+  const rebuildFloor = () => {
+    const s = sim.current;
+    s.floor.fill(0);
+    s.heaps.forEach(h => h.adds.forEach(([b, a]) => (s.floor[b] += a)));
+    s.heapDirty = true;
+  };
+  const land = (st, bin, over) => {
+    const s = sim.current;
+    const c = cfg.current;
+    st.ay -= over;
+    shape(st, st.H, s.t, 1);
+    const heap = heapFor(st.feed.key);
+    paintStrip(heap.canvas.getContext('2d'), st, st.H, s.dpr);
+    const cap = c.fallHeight * 0.5;
+    HEAP_ADD.forEach((a, j) => {
+      const b = bin + j - 2;
+      if (b < 0 || b >= s.floor.length) return;
+      const add = Math.min(a, Math.max(0, cap - s.floor[b]));
+      s.floor[b] += add;
+      heap.adds.push([b, add]);
+    });
+    s.heapDirty = true;
+  };
 
   const metrics = () => {
     const c = cfg.current;
@@ -366,6 +412,10 @@ export default function Shredder({
     if (s.drag) {
       later(300, () => revive(keys, index));
       return;
+    }
+    if (keys.some(key => s.heaps.delete(key))) {
+      rebuildFloor();
+      run();
     }
     const entering = new Set();
     reflow(
@@ -699,9 +749,11 @@ export default function Shredder({
     });
     const ctx = canvas.getContext('2d');
     const dpr = s.dpr;
-    if (s.strips.length) {
+    if (s.strips.length || s.heapDirty) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      s.heaps.forEach(h => ctx.drawImage(h.canvas, 0, 0));
+      s.heapDirty = false;
     }
     for (let i = s.strips.length - 1; i >= 0; i -= 1) {
       const st = s.strips[i];
@@ -724,6 +776,8 @@ export default function Shredder({
           st.speed = 150 + st.rA * 230;
           st.splay = (st.rA - 0.5) * 320;
           st.rest = side() * pick(0.15, 0.6);
+          st.lay = side() * pick(70, 100) * DEG;
+          st.settling = false;
           f.strips -= 1;
         } else {
           st.ay = 0;
@@ -737,13 +791,36 @@ export default function Shredder({
         st.vx = ease(st.vx, st.splay * tear + (st.ax - m.rw / 2) * 0.25, dt, 0.4);
         st.ax += st.vx * dt;
         st.ay += st.vy * dt;
-        st.th = ease(st.th, st.rest, dt, 0.5);
+        st.th = ease(st.th, st.rest, dt, st.settling ? 0.12 : 0.5);
         st.core = 1 - smooth(tear / 0.85) * (0.8 - st.rA * 0.16);
         shape(st, st.H, s.t, tear);
-        st.alpha = 1 - smooth((tear - 0.6) / 0.4);
-        if (st.alpha <= 0.01 || st.pts[1] > c.fallHeight) {
-          s.strips.splice(i, 1);
-          continue;
+        if (c.pile) {
+          let maxY = -Infinity;
+          let mx = 0;
+          for (let j = 1; j < st.pts.length; j += 3) {
+            if (st.pts[j] > maxY) {
+              maxY = st.pts[j];
+              mx = st.pts[j - 1];
+            }
+          }
+          const bin = clamp(Math.round((mx + OVER) / BIN), 0, Math.max(0, s.floor.length - 1));
+          const floorY = c.fallHeight - (s.floor[bin] || 0) - 1;
+          if (!st.settling && floorY - maxY < 70) {
+            st.settling = true;
+            st.rest = st.lay;
+          }
+          st.alpha = 1;
+          if (maxY >= floorY) {
+            land(st, bin, maxY - floorY);
+            s.strips.splice(i, 1);
+            continue;
+          }
+        } else {
+          st.alpha = 1 - smooth((tear - 0.6) / 0.4);
+          if (st.alpha <= 0.01 || st.pts[1] > c.fallHeight) {
+            s.strips.splice(i, 1);
+            continue;
+          }
         }
       } else {
         st.core = 1;
@@ -753,6 +830,7 @@ export default function Shredder({
       paintStrip(ctx, st, len, dpr);
       moving = true;
     }
+    if (s.heapDirty) moving = true;
     const slit = slitRef.current;
     if (slit) {
       slit.style.transform = pulling ? `translate(${Math.sin(s.t * 140) * 0.5}px, ${Math.cos(s.t * 97) * 0.35}px)` : '';
@@ -908,6 +986,9 @@ export default function Shredder({
       s.dpr = dpr;
       canvas.width = Math.ceil(cw * dpr);
       canvas.height = Math.ceil(ch * dpr);
+      s.heaps.clear();
+      s.floor = new Float32Array(Math.ceil(cw / BIN) + 1);
+      s.heapDirty = true;
     };
     const ro = new ResizeObserver(fit);
     ro.observe(root);

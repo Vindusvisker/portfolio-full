@@ -26,6 +26,8 @@ export interface ShredderProps<T extends { id: string | number }> {
   disabled?: boolean;
   /** Controlled: how many rows should be shredded right now, bottom row first. */
   shredCount?: number;
+  /** Let the strips land and heap up under the rollers instead of fading out. */
+  pile?: boolean;
   className?: string;
 }
 

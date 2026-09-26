@@ -7,9 +7,18 @@ import { SHAKE_EVENT } from "./konami";
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 2.5;
-/** Screens at least this wide start zoomed out a little, so the whole board fits. */
-const LARGE_SCREEN = "(min-width: 1024px)";
-const LARGE_SCREEN_SCALE = 0.8;
+/**
+ * From tablets up, the world is a fixed sheet (WORLD px) scaled to fit the
+ * stage, like a drawing on paper. Stickers are laid out in percent of that
+ * sheet, so their spacing is the same on every screen size. Phones keep the
+ * world equal to the stage, with its own sticker positions.
+ */
+const LARGE_SCREEN = "(min-width: 768px)";
+export const WORLD = { w: 1440, h: 900 };
+/** How much of the stage the sheet fills at rest; the rest is margin. */
+const FIT = 0.75;
+/** Portrait stages are limited by width, so the sheet may use nearly all of it. */
+const FIT_PORTRAIT = 0.94;
 
 const trim = (n: number) => (Math.round(n * 100) / 100).toString();
 
@@ -49,15 +58,20 @@ export function Canvas({ children }: CanvasProps) {
     setScaleLabel((cur) => (cur === r ? cur : r));
   });
 
+  const worldRef = useRef<HTMLDivElement>(null);
+
   /** Keep at least 30% of the world inside the stage on each axis. */
   const clampPan = useCallback((nx: number, ny: number, ns: number) => {
     const el = stageRef.current;
-    if (!el) return { x: nx, y: ny };
+    const world = worldRef.current;
+    if (!el || !world) return { x: nx, y: ny };
     const vw = el.clientWidth;
     const vh = el.clientHeight;
-    const minX = 0.3 * vw - vw * ns;
+    const ww = world.offsetWidth;
+    const wh = world.offsetHeight;
+    const minX = 0.3 * vw - ww * ns;
     const maxX = 0.7 * vw;
-    const minY = 0.3 * vh - vh * ns;
+    const minY = 0.3 * vh - wh * ns;
     const maxY = 0.7 * vh;
     return {
       x: Math.min(maxX, Math.max(minX, nx)),
@@ -103,24 +117,46 @@ export function Canvas({ children }: CanvasProps) {
   };
 
   // Pick the home view for this screen size and settle into it on load.
+  // Re-fit (without animating) whenever the stage changes size.
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
     const mq = window.matchMedia(LARGE_SCREEN);
     const apply = (settle: boolean) => {
-      const hs = mq.matches ? LARGE_SCREEN_SCALE : 1;
-      // Zoom about the middle of the stage so the board stays centered.
-      home.current = {
-        x: (el.clientWidth / 2) * (1 - hs),
-        y: (el.clientHeight / 2) * (1 - hs),
-        s: hs,
-      };
+      const vw = el.clientWidth;
+      const vh = el.clientHeight;
+      if (mq.matches) {
+        // Fit the sheet inside the stage and center it.
+        const byWidth = vw / WORLD.w;
+        const byHeight = vh / WORLD.h;
+        const hs = byWidth < byHeight ? byWidth * FIT_PORTRAIT : byHeight * FIT;
+        // Centered, except on tall stages where the sheet sits near the top so
+        // the badge still hangs from the top edge.
+        const y = Math.min((vh - WORLD.h * hs) / 2, vh * 0.12);
+        home.current = { x: (vw - WORLD.w * hs) / 2, y, s: hs };
+      } else {
+        home.current = { x: 0, y: 0, s: 1 };
+      }
       if (settle) reset(0.6);
+      else reset(0);
     };
     apply(true);
     const onChange = () => apply(true);
     mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    let first = true;
+    const ro = new ResizeObserver(() => {
+      // The observer fires once on attach; the settle above already handled that.
+      if (first) {
+        first = false;
+        return;
+      }
+      apply(false);
+    });
+    ro.observe(el);
+    return () => {
+      mq.removeEventListener("change", onChange);
+      ro.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -211,7 +247,12 @@ export function Canvas({ children }: CanvasProps) {
       >
         <div aria-hidden="true" className="board-glow pointer-events-none absolute inset-0" />
         <div aria-hidden="true" className="board-grid pointer-events-none absolute inset-0" />
-        <motion.div data-world="" className="absolute inset-0 origin-top-left" style={{ transform }}>
+        <motion.div
+          ref={worldRef}
+          data-world=""
+          className="absolute inset-0 origin-top-left md:inset-auto md:left-0 md:top-0 md:h-[900px] md:w-[1440px]"
+          style={{ transform }}
+        >
           {children}
         </motion.div>
       </div>
@@ -230,7 +271,7 @@ export function Canvas({ children }: CanvasProps) {
           <div className="text-[8px] opacity-60">scale</div>
           <div className="tabular-nums">{scaleLabel}</div>
         </div>
-        <div className="px-3 py-1.5 normal-case tracking-normal">
+        <div className="hidden px-3 py-1.5 normal-case tracking-normal lg:block">
           <div className="text-[8px] uppercase tracking-wider opacity-60">controls</div>
           <div>drag to pan · ⌘ + scroll or pinch to zoom · double-click to shake</div>
         </div>
