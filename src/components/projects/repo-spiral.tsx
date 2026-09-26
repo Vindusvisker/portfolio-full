@@ -62,6 +62,15 @@ export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: Re
     let prev = performance.now();
     let bounds = stage.getBoundingClientRect();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // Blurring a dozen cards every frame is the single most expensive thing
+    // here on a phone, so coarse pointers get opacity only.
+    const cheap = window.matchMedia("(pointer: coarse)").matches || (navigator.hardwareConcurrency || 8) <= 4;
+    let visible = true;
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible && !frame) frame = requestAnimationFrame(render);
+    });
+    io.observe(stage);
     const ro = new ResizeObserver(() => {
       bounds = stage.getBoundingClientRect();
     });
@@ -103,18 +112,19 @@ export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: Re
         card.style.width = `${cardW}px`;
         card.style.transform = `translate(-50%, -50%) translate3d(${x}px, ${y}px, 0) rotate(${tilt(i)}deg) scale(${scale * depthScale})`;
         card.style.opacity = (opacity * topFade * (1 - 0.35 * back)).toFixed(3);
-        card.style.filter = blur > 0.01 ? `blur(${blur.toFixed(2)}px)` : "none";
+        card.style.filter = !cheap && blur > 0.01 ? `blur(${blur.toFixed(2)}px)` : "none";
         card.style.zIndex = String(Math.round(depth * 100000) + i);
         card.style.pointerEvents = opacity > 0.25 && focus > 0.15 ? "auto" : "none";
       });
 
-      frame = requestAnimationFrame(render);
+      frame = visible ? requestAnimationFrame(render) : 0;
     };
     frame = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(frame);
       ro.disconnect();
+      io.disconnect();
     };
   }, [n]);
 

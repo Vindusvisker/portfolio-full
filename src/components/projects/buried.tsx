@@ -10,7 +10,8 @@ const GAP = 8;
 const FALL = 150;
 const WIDTH = 960;
 const INSET = 14;
-const STRIP = 11;
+/** Strip width. Phones get fewer, wider strips so the fall costs less per frame. */
+const STRIP = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches ? 18 : 11;
 /** Navbar, top padding and heading block. Phones wrap the heading, so they reserve more. */
 const chrome = () => (window.innerWidth >= 768 ? 200 : 215);
 

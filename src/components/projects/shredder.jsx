@@ -13,7 +13,14 @@ const TUG = 2.4;
 const TUG_DECAY = 0.14;
 const SLIT = 6;
 const OVER = 40;
-const SLIVER = 2;
+// Phones and other low-power devices get coarser slivers and a lower pixel
+// density: the fall canvas is repainted every frame while strips move, and at
+// 2px slivers on a 3x screen that is thousands of draws a frame.
+const LOW_POWER =
+  typeof window !== 'undefined' &&
+  (window.matchMedia?.('(pointer: coarse)').matches || (navigator.hardwareConcurrency || 8) <= 4);
+const SLIVER = LOW_POWER ? 5 : 2;
+const MAX_DPR = LOW_POWER ? 1.5 : 3;
 const STACK_K = 320;
 const STACK_C = 22;
 const STAGGER = 0.035;
@@ -85,7 +92,7 @@ const snapshot = (node, W, H) => {
     height: `${H}px`
   });
   clone.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
-  const scale = Math.min(3, window.devicePixelRatio || 1);
+  const scale = Math.min(MAX_DPR, window.devicePixelRatio || 1);
   return Promise.all(
     images.map(async ([img, from]) => {
       img.removeAttribute('srcset');
@@ -976,7 +983,7 @@ export default function Shredder({
     const canvas = canvasRef.current;
     if (!root || !canvas) return undefined;
     const fit = () => {
-      const dpr = Math.min(3, window.devicePixelRatio || 1);
+      const dpr = Math.min(MAX_DPR, window.devicePixelRatio || 1);
       const cw = root.offsetWidth + OVER * 2;
       const ch = cfg.current.fallHeight;
       if (cw === s.cw && ch === s.ch && dpr === s.dpr) return;
