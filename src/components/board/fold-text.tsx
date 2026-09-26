@@ -48,13 +48,15 @@ interface FoldTextProps {
   duration?: number;
   /** Seconds between words */
   stagger?: number;
+  /** Wait until the text scrolls into view before unfolding, once. */
+  inView?: boolean;
 }
 
 /**
  * Unfolds its text word by word from a top hinge on mount. Based on the
  * React Bits FoldText, adapted to animate arbitrary children.
  */
-export function FoldText({ children, className, duration = 0.5, stagger = 0.03 }: FoldTextProps) {
+export function FoldText({ children, className, duration = 0.5, stagger = 0.03, inView = false }: FoldTextProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   useIsoLayoutEffect(() => {
@@ -64,27 +66,45 @@ export function FoldText({ children, className, duration = 0.5, stagger = 0.03 }
     if (!pieces.length) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const tween = gsap.fromTo(
-      pieces,
-      {
-        opacity: 0,
-        rotateX: reduceMotion ? 0 : -92,
-        transformOrigin: "50% 0%",
-        "--fold-crease": reduceMotion ? 0 : 0.55,
-        force3D: true,
+    const from = {
+      opacity: 0,
+      rotateX: reduceMotion ? 0 : -92,
+      transformOrigin: "50% 0%",
+      "--fold-crease": reduceMotion ? 0 : 0.55,
+      force3D: true,
+    };
+    const to = {
+      opacity: 1,
+      rotateX: 0,
+      "--fold-crease": 0,
+      duration: reduceMotion ? 0.2 : duration,
+      stagger: reduceMotion ? 0.01 : stagger,
+      ease: "power3.out",
+      clearProps: "willChange",
+    };
+
+    let tween: gsap.core.Tween | null = null;
+    if (!inView) {
+      tween = gsap.fromTo(pieces, from, to);
+      return () => {
+        tween?.kill();
+      };
+    }
+
+    // Hold the folded state until the text scrolls in, then unfold once.
+    gsap.set(pieces, from);
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        tween = gsap.fromTo(pieces, from, to);
       },
-      {
-        opacity: 1,
-        rotateX: 0,
-        "--fold-crease": 0,
-        duration: reduceMotion ? 0.2 : duration,
-        stagger: reduceMotion ? 0.01 : stagger,
-        ease: "power3.out",
-        clearProps: "willChange",
-      }
+      { rootMargin: "0px 0px -12% 0px" }
     );
+    io.observe(root);
     return () => {
-      tween.kill();
+      io.disconnect();
+      tween?.kill();
     };
     // Runs once per mount; the card deck remounts this for every card.
     // eslint-disable-next-line react-hooks/exhaustive-deps

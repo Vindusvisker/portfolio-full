@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ROUTE_REVEAL_EVENT, routeCovered } from "@/components/route-transition";
 import InfiniteMenu from "./infinite-menu";
 import { ICON_MAP } from "./icons";
 import { cn } from "@/lib/utils";
@@ -74,6 +75,18 @@ export function StackGlobe({ items, className }: { items: GlobeItem[]; className
   const iconsRef = useRef<HTMLDivElement>(null);
   const [menuItems, setMenuItems] = useState<GlobeMenuItem[] | null>(null);
   const [touched, setTouched] = useState(false);
+  // Under a route sheet the globe waits, then flies in when the sheet lifts.
+  const [arrived, setArrived] = useState(false);
+
+  useEffect(() => {
+    if (!routeCovered()) {
+      setArrived(true);
+      return;
+    }
+    const onReveal = () => setArrived(true);
+    window.addEventListener(ROUTE_REVEAL_EVENT, onReveal);
+    return () => window.removeEventListener(ROUTE_REVEAL_EVENT, onReveal);
+  }, []);
 
   useEffect(() => {
     const root = iconsRef.current;
@@ -112,6 +125,15 @@ export function StackGlobe({ items, className }: { items: GlobeItem[]; className
         })}
       </div>
 
+      <div
+        className="stack-globe__body"
+        style={{
+          transform: arrived ? "scale(1)" : "scale(0.06)",
+          opacity: arrived ? 1 : 0,
+          // Slow start, so it reads as approaching from far off, then settles.
+          transition: "transform 1.7s cubic-bezier(0.45, 0, 0.15, 1), opacity 0.6s ease-out",
+        }}
+      >
       {menuItems && (
         <InfiniteMenu
           items={menuItems}
@@ -144,6 +166,7 @@ export function StackGlobe({ items, className }: { items: GlobeItem[]; className
           )}
         />
       )}
+      </div>
 
       <span className={cn("stack-globe__hint", touched && "is-hidden")}>Drag to spin</span>
       <a href="#stack-list" className="stack-globe__scroll">

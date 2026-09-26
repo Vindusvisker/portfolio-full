@@ -23,30 +23,36 @@ const work: WorkItem[] = [
   {
     name: "trale.ai",
     status: "Production",
-    note: "AI meeting intelligence platform at Supercompany. Records, transcribes and summarizes meetings, then handles prep and follow-up. Thousands of users.",
+    pitch: "Meeting notes that write themselves.",
+    note: "AI meeting notetaker built at Supercompany. It joins the call, transcribes it, writes the summary and the follow-ups, and preps you for the next one. I build across the whole product, but the part I care most about is the interface: the design and the frontend people use every day.",
+    facts: ["Developer, Supercompany", "Thousands of users", "In production"],
     href: "https://trale.ai",
     image: "/projects/trale-print.jpg",
-    plate: "#122347",
+    plate: "#15120f",
     brightness: 0.06,
     fit: "contain",
-    aspect: "aspect-[2/3]",
-    place: "md:col-span-5 md:col-start-2",
+    aspect: "aspect-square",
+    place: "md:col-span-8 md:col-start-2",
   },
   {
     name: "lerret.app",
     status: "Production",
-    note: "Browser based editor for screenshots and device mockups. 35 devices, annotations, and image or 60 fps video export, all rendered in the browser.",
+    pitch: "Screenshots that look like they cost money.",
+    note: "A browser based editor for screenshots and device mockups. Drop in a capture, pick one of 35 device frames, annotate, and export a still or a 60 fps video. Everything renders locally in the browser, so nothing is uploaded and there is no queue.",
+    facts: ["Solo build", "35 device frames", "60 fps video export", "Live, for sale"],
     href: "https://lerret.app",
     image: "/projects/lerret-print.jpg",
-    plate: "#211b31",
-    brightness: 0.1,
-    aspect: "aspect-[3/2]",
-    place: "md:col-span-8 md:col-start-4 md:mt-[4vh] lg:mt-[6vh]",
+    plate: "#0a140c",
+    brightness: 0.06,
+    aspect: "aspect-square",
+    place: "md:col-span-7 md:col-start-5 md:mt-[4vh] lg:mt-[6vh]",
   },
   {
     name: "personaforge.me",
     status: "Sold",
-    note: "Persona and profile card editor. Templates, a visual editor, and export to PNG, JPG, WebP, HTML/CSS or JSX. Built, launched, and sold on.",
+    pitch: "Built it, shipped it, sold it.",
+    note: "A visual editor for persona and profile cards. Start from a template, tweak it in the editor, then export as an image or as HTML/CSS or JSX you can paste straight into a codebase. I took it from idea to launch, then sold the whole thing on to a new owner.",
+    facts: ["Solo build", "Idea to launch to exit", "Sold"],
     href: "",
     image: "/projects/personaforge-print.jpg",
     plate: "#1c1b1f",
@@ -88,7 +94,7 @@ export default async function ProjectsPage() {
       <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('paper')" }} />
       <PaperMode />
 
-      <div data-section-title={titles.hero}>
+      <div data-section-title={titles.hero} data-switch-look="plain">
         <Reel
           items={[
             { src: "/projects/trale.jpg", alt: "trale.ai landing page" },
@@ -98,7 +104,7 @@ export default async function ProjectsPage() {
         />
       </div>
 
-      <section data-section-title={titles.work} className="relative px-5 pb-24 pt-[30svh] md:px-8 md:pb-[24vh]">
+      <section data-section-title={titles.work} data-switch-look="plain" className="relative px-5 pb-24 pt-[30svh] md:px-8 md:pb-[24vh]">
         <Wash colors={work.map((w) => w.plate)} />
         <div className="relative z-10">
         <div className="mb-16 grid gap-6 md:mb-20 md:grid-cols-2">
@@ -144,7 +150,7 @@ export default async function ProjectsPage() {
         </div>
       </section>
 
-      <section id="graveyard" data-section-title={titles.repos} className="paper-sheet relative pb-10 pt-[20svh]">
+      <section id="graveyard" data-section-title={titles.repos} data-switch-look="note" className="paper-sheet relative pb-10 pt-[20svh]">
         <div className="paper-grain pointer-events-none absolute inset-0 opacity-30 mix-blend-multiply" aria-hidden="true" />
         <div className="relative mx-auto max-w-6xl px-5 md:px-8">
           <Graveyard src={graveyardPrint(sorted, totalContributions)} />
@@ -166,6 +172,7 @@ export default async function ProjectsPage() {
 
       <section
         data-section-title={titles.contact}
+        data-switch-look="note"
         className="flex min-h-svh flex-col justify-end overflow-hidden px-5 pb-4 pt-32 md:px-8"
       >
         <div className="mx-auto w-full max-w-6xl">

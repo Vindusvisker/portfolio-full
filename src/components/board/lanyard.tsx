@@ -51,6 +51,8 @@ interface LanyardProps {
    * Lets the canvas be pointer-transparent so what's under it stays usable.
    */
   eventSource?: HTMLElement;
+  /** Called once the model and textures are loaded and the first frame can render. */
+  onReady?: () => void;
 }
 
 /**
@@ -90,6 +92,7 @@ export default function Lanyard({
   lanyardImage = DEFAULT_BAND_URL,
   lanyardWidth = 1,
   eventSource,
+  onReady,
 }: LanyardProps) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 768);
 
@@ -115,6 +118,7 @@ export default function Lanyard({
         <ambientLight intensity={Math.PI} />
         <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
           <Band
+            onReady={onReady}
             isMobile={isMobile}
             hangAt={hangAt}
             frontImage={frontImage}
@@ -145,11 +149,12 @@ interface BandProps {
   imageFit: "cover" | "contain";
   lanyardImage: string;
   lanyardWidth: number;
+  onReady?: () => void;
 }
 
 type BandMesh = THREE.Mesh & { geometry: MeshLineGeometry };
 
-function Band({ maxSpeed = 50, minSpeed = 0, isMobile, hangAt, frontImage, backImage, imageFit, lanyardImage, lanyardWidth }: BandProps) {
+function Band({ maxSpeed = 50, minSpeed = 0, isMobile, hangAt, frontImage, backImage, imageFit, lanyardImage, lanyardWidth, onReady }: BandProps) {
   const band = useRef<BandMesh>(null);
   const fixed = useRef<RapierRigidBody>(null);
   const j1 = useRef<RapierRigidBody>(null);
@@ -218,6 +223,12 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile, hangAt, frontImage, backI
   );
   const [dragged, setDragged] = useState<THREE.Vector3 | false>(false);
   const [hovered, setHovered] = useState(false);
+
+  // Band only mounts once useGLTF/useTexture have resolved, so this is "assets ready".
+  useEffect(() => {
+    onReady?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Rapier types its joint refs as non-null; ours start null until mount.
   type BodyRef = React.RefObject<RapierRigidBody>;

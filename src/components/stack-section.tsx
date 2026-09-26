@@ -1,6 +1,6 @@
 "use client";
 
-import { ScrollRevealText } from "./scroll-reveal-text";
+import { FoldText } from "./board/fold-text";
 import { ICON_MAP } from "./stack/icons";
 
 interface StackItem {
@@ -23,7 +23,9 @@ export function StackSection({
         {category}
       </h2>
       <div className="mt-4">
-        <ScrollRevealText>{description}</ScrollRevealText>
+        <FoldText inView className="text-xl font-bold leading-snug md:text-3xl">
+          {description}
+        </FoldText>
       </div>
       <div className="mt-6 space-y-2">
         {items.map((item) => {

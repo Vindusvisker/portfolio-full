@@ -1,4 +1,3 @@
-import { BlurFade } from "@/components/ui/blur-fade";
 import { StackSection } from "@/components/stack-section";
 import { StackGlobe } from "@/components/stack/stack-globe";
 import { SectionTitle } from "@/components/projects/section-title";
@@ -142,16 +141,14 @@ export default function StackPage() {
       </section>
       <section id="stack-list" className="mx-auto max-w-3xl px-6 py-8 scroll-mt-24">
         <div className="space-y-16">
-          {stack.map((section, i) => (
-            <BlurFade key={section.category} delay={0.05 + i * 0.03} inView>
-              <div data-section-title={`Stack. ${section.category}.`}>
-                <StackSection
-                  category={section.category}
-                  description={section.description}
-                  items={section.items}
-                />
-              </div>
-            </BlurFade>
+          {stack.map((section) => (
+            <div key={section.category} data-section-title={`Stack. ${section.category}.`}>
+              <StackSection
+                category={section.category}
+                description={section.description}
+                items={section.items}
+              />
+            </div>
           ))}
         </div>
       </section>

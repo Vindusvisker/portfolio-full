@@ -153,6 +153,26 @@ a .fold-piece {
   }
 }
 
+/* "taking notes..." with the dots typing in, for the meeting tile */
+.dots::after {
+  content: "";
+  animation: dots 1.4s steps(4, end) infinite;
+}
+@keyframes dots {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+}
+
+/* Rubber-stamp ink: speckled through a noise mask so the impression is uneven */
+.stamp {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0.35 1 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0.35 1 1 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  -webkit-mask-size: 220px 220px;
+  mask-size: 220px 220px;
+}
+
 /* Blueprint sheet: a touch lighter in the middle, darker toward the edges */
 .board-glow {
   background:
@@ -340,6 +360,10 @@ a .fold-piece {
 body {
   transition: background-color 700ms ease, color 700ms ease;
 }
+/* Under a route sheet the page must already be its final color when the sheet lifts */
+html[data-route-cover] body {
+  transition: none;
+}
 
 /* Faint ruled grid, only visible once the page is cream */
 .paper-sheet {
@@ -490,6 +514,15 @@ body {
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
+}
+/* Wraps the globe so it can fly in; fills the hero like the menu does */
+.stack-globe__body {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 45%;
+  will-change: transform, opacity;
 }
 .infinite-menu {
   position: relative;
@@ -650,3 +683,96 @@ body {
   mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 70%, transparent 92%);
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 70%, transparent 92%);
 }
+
+/* Mode switch looks (see components/navbar.tsx). Kept out of @layer components so they are never tree-shaken. */
+/* Projects switch. Plain: just the three words, white in difference blend so they read on cream and
+   on the dark plates. Note: a taped sticky note, like the repo notes. Morphs between the two on scroll. */
+.mode-switch-work {
+  /* No position here: the navbar sets fixed, and the pseudo elements hang off that */
+  isolation: isolate;
+  padding: 5px;
+  border-radius: 999px;
+  background: transparent;
+  transition:
+    transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 600ms ease,
+    border-radius 600ms ease;
+}
+.mode-switch-work > a {
+  border-radius: 999px;
+  transition:
+    background-color 500ms ease,
+    color 250ms ease,
+    box-shadow 500ms ease,
+    transform 500ms ease,
+    border-radius 600ms ease;
+}
+/* The note, invisible until the paper comes back */
+.mode-switch-work::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: #f4e7a6;
+  box-shadow:
+    inset 0 0 0 1px rgba(138, 122, 42, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+.mode-switch-tape {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  z-index: 1;
+  width: 56px;
+  height: 18px;
+  transform: translateX(-50%) rotate(-3deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+.mode-switch-work[data-look="plain"] {
+  mix-blend-mode: difference;
+}
+.mode-switch-work[data-look="note"] {
+  border-radius: 4px;
+  transform: rotate(1.5deg);
+  box-shadow: 0 10px 20px -10px rgba(26, 23, 19, 0.5);
+}
+.mode-switch-work[data-look="note"] > a {
+  border-radius: 3px;
+}
+.mode-switch-work[data-look="note"]::after {
+  opacity: 1;
+}
+.mode-switch-work[data-look="note"] .mode-switch-tape {
+  opacity: 1;
+}
+/* Active segment on the note: a red stamp, like BREATHING on the repo notes */
+.mode-switch-note-on {
+  color: #b3402a;
+  box-shadow: inset 0 0 0 1.5px #b3402a;
+  transform: rotate(-3deg);
+}
+
+/* Stack: a glass capsule lit from inside, an instrument readout */
+.mode-switch-space {
+  border: 1px solid rgba(242, 239, 232, 0.16);
+  background: rgba(242, 239, 232, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 1px 0 rgba(242, 239, 232, 0.08),
+    0 0 28px rgba(242, 239, 232, 0.05),
+    0 10px 24px -12px rgba(0, 0, 0, 0.8);
+}
+.mode-switch-on {
+  background: rgba(242, 239, 232, 0.1);
+  box-shadow:
+    inset 0 0 0 1px rgba(242, 239, 232, 0.3),
+    0 0 14px rgba(242, 239, 232, 0.18);
+}
+
+

@@ -2,6 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { ROUTE_REVEAL_EVENT, routeCovered, routeRevealedAt } from "@/components/route-transition";
+
+/** Seconds for the warp streaks to settle into still stars */
+const SETTLE = 1.4;
+const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
 
 interface Star {
   x: number;
@@ -42,6 +47,15 @@ export function Starfield({ className, density = 1 / 6500 }: { className?: strin
     let py = 0.5;
     let ox = 0;
     let oy = 0;
+    // Arriving under a route sheet, the field starts at full warp (stars
+    // streaking outward from the center) and settles once the sheet lifts.
+    // Mounting right after a lift (dev remounts do this) settles from that lift.
+    const sinceReveal = performance.now() - routeRevealedAt();
+    let settleAt: number | null = routeCovered() ? null : sinceReveal < 600 ? routeRevealedAt() : -Infinity;
+    const onReveal = () => {
+      if (settleAt == null) settleAt = performance.now();
+    };
+    window.addEventListener(ROUTE_REVEAL_EVENT, onReveal);
 
     const seed = () => {
       w = canvas.clientWidth;
@@ -56,8 +70,8 @@ export function Starfield({ className, density = 1 / 6500 }: { className?: strin
           x: Math.random(),
           y: Math.random(),
           z: 0.3 + Math.random() * 0.7,
-          r: bright ? 1.3 + Math.random() * 0.6 : 0.45 + Math.random() * 0.6,
-          a: bright ? 0.7 + Math.random() * 0.3 : 0.18 + Math.random() * 0.45,
+          r: bright ? 1.4 + Math.random() * 0.6 : 0.6 + Math.random() * 0.6,
+          a: bright ? 0.75 + Math.random() * 0.25 : 0.28 + Math.random() * 0.45,
           phase: Math.random() * Math.PI * 2,
           speed: 0.4 + Math.random() * 1.4,
         };
@@ -70,15 +84,34 @@ export function Starfield({ className, density = 1 / 6500 }: { className?: strin
       ox += ((0.5 - px) - ox) * 0.04;
       oy += ((0.5 - py) - oy) * 0.04;
       const drift = reduce ? 0 : t * 0.0025;
+      const warp = reduce ? 0 : settleAt == null ? 1 : 1 - easeOut(Math.min(1, (t - settleAt) / (SETTLE * 1000)));
+      const cx = w / 2;
+      const cy = h / 2;
       ctx.fillStyle = ink;
+      ctx.strokeStyle = ink;
+      ctx.lineCap = "round";
       for (const s of stars) {
         const twinkle = reduce ? 1 : 0.7 + 0.3 * Math.sin(t * 0.001 * s.speed + s.phase);
         const x = (((s.x * w + drift * s.z + ox * 28 * s.z) % w) + w) % w;
         const y = s.y * h + oy * 18 * s.z;
+        const r = s.r * (0.6 + 0.4 * s.z);
         ctx.globalAlpha = s.a * twinkle;
-        ctx.beginPath();
-        ctx.arc(x, y, s.r * (0.6 + 0.4 * s.z), 0, Math.PI * 2);
-        ctx.fill();
+        if (warp > 0.005) {
+          // Streak away from the center; longer for nearer stars and further out.
+          const dx = x - cx;
+          const dy = y - cy;
+          const dist = Math.hypot(dx, dy) || 1;
+          const len = warp * warp * (60 + dist * 0.45) * s.z;
+          ctx.lineWidth = r * 1.6;
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + (dx / dist) * len, y + (dy / dist) * len);
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
       ctx.globalAlpha = 1;
     };
@@ -89,6 +122,8 @@ export function Starfield({ className, density = 1 / 6500 }: { className?: strin
       draw(t);
       if (!reduce) raf = requestAnimationFrame(loop);
     };
+    const onRevealStart = () => start();
+    window.addEventListener(ROUTE_REVEAL_EVENT, onRevealStart);
     const start = () => {
       if (!raf && visible) raf = requestAnimationFrame(loop);
     };
@@ -125,6 +160,8 @@ export function Starfield({ className, density = 1 / 6500 }: { className?: strin
       io.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener(ROUTE_REVEAL_EVENT, onReveal);
+      window.removeEventListener(ROUTE_REVEAL_EVENT, onRevealStart);
     };
   }, [density]);
 

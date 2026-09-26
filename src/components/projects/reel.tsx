@@ -3,6 +3,12 @@
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { ROUTE_REVEAL_EVENT, routeCovered } from "@/components/route-transition";
+
+/** Seconds the sphere takes to grow in */
+const INTRO = 0.9;
+/** Ease out with a little overshoot, like something set down on the sheet */
+const backOut = (x: number) => 1 + 2.2 * Math.pow(x - 1, 3) + 1.2 * Math.pow(x - 1, 2);
 
 export interface ReelItem {
   src: string;
@@ -201,6 +207,18 @@ export function Reel({ items }: { items: [ReelItem, ReelItem, ReelItem] }) {
     ro.observe(canvas);
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // The sphere grows in once its textures are ready. Arriving under a route
+    // sheet, it waits for the sheet to lift so the two motions read as one.
+    let introAt: number | null = null;
+    let armed = false;
+    const arm = () => {
+      if (!armed && loaded >= items.length && !routeCovered()) {
+        armed = true;
+        introAt = performance.now();
+      }
+    };
+    const onReveal = () => arm();
+    window.addEventListener(ROUTE_REVEAL_EVENT, onReveal);
     const period = 1.8;
     const hold = 0.9;
     const t0 = performance.now();
@@ -209,6 +227,7 @@ export function Reel({ items }: { items: [ReelItem, ReelItem, ReelItem] }) {
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
       if (loaded < items.length) return;
+      arm();
       const box = wrap.current?.getBoundingClientRect();
       if (box && box.bottom < 0) return;
 
@@ -237,7 +256,8 @@ export function Reel({ items }: { items: [ReelItem, ReelItem, ReelItem] }) {
       gl.uniform1f(U.time, reduce ? 0 : t);
       gl.uniform1f(U.p, progress.current);
       gl.uniform1f(U.dpr, dpr);
-      gl.uniform1f(U.radius, Math.min(W, H) * 0.2);
+      const intro = reduce ? 1 : introAt == null ? 0.001 : Math.max(0.001, backOut(Math.min(1, (now - introAt) / (INTRO * 1000))));
+      gl.uniform1f(U.radius, Math.min(W, H) * 0.2 * intro);
       gl.uniform2f(U.rect, rw / 2, rh / 2);
       gl.uniform1f(U.rectR, 0.0);
       gl.uniform1f(U.aspA, asp[slot]);
@@ -253,6 +273,7 @@ export function Reel({ items }: { items: [ReelItem, ReelItem, ReelItem] }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      window.removeEventListener(ROUTE_REVEAL_EVENT, onReveal);
       ro.disconnect();
       imgs.forEach((img) => { img.onload = null; });
       texs.forEach((t) => gl.deleteTexture(t));

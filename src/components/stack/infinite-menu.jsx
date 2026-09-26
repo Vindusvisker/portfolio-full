@@ -835,7 +835,6 @@ class InfiniteGridMenu {
       gl.useProgram(this.discProgram);
       gl.enable(gl.CULL_FACE);
     }
-| gl.DEPTH_BUFFER_BIT);
 
     gl.uniformMatrix4fv(this.discLocations.uWorldMatrix, false, this.worldMatrix);
     gl.uniformMatrix4fv(this.discLocations.uViewMatrix, false, this.camera.matrices.view);

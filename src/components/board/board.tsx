@@ -23,6 +23,7 @@ import { Sheet } from "./sheet";
 import { NorwayClock } from "./clock";
 import { Badge } from "./badge";
 import { Konami } from "./konami";
+import { MeetingTile } from "./meeting-tile";
 import { Emoji, Keycaps, Label, LogoChip, Polaroid, Sticker, TrackChip } from "./sticker";
 
 /**
@@ -101,8 +102,29 @@ export async function Board() {
         <Label inverted>lerret.app ↗</Label>
       </Sticker>
 
-      {/* Top pill */}
-      <Sticker desktop={{ x: 60, y: 12, rotate: -2 }} mobile={{ x: 54, y: 27, rotate: -2 }} href="https://trale.ai" label="trale.ai">
+      {/* trale.ai: a meeting in progress on desktop, a plain link pill on phones */}
+      <Sticker
+        id="trale"
+        bubble={
+          <>
+            I&apos;m building trale.ai at Supercompany. An AI notetaker that joins your meetings, writes the notes and
+            handles the follow-up. Thousands of users.
+            <a
+              href="https://trale.ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 block text-sm font-bold text-white/60 underline decoration-2 underline-offset-4 transition-colors hover:text-white"
+            >
+              trale.ai ↗
+            </a>
+          </>
+        }
+        desktop={{ x: 61, y: 13, rotate: -2 }}
+        label="trale.ai, currently building"
+      >
+        <MeetingTile />
+      </Sticker>
+      <Sticker desktop={{ x: 54, y: 27, rotate: -2 }} mobile={{ x: 54, y: 27, rotate: -2 }} href="https://trale.ai" label="trale.ai" className="md:hidden">
         <Label>currently building trale.ai ↗</Label>
       </Sticker>
 
