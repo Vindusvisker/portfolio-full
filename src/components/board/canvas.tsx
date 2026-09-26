@@ -1,15 +1,17 @@
 "use client";
 
-import { animate, motion, useMotionTemplate, useMotionValue, useTransform, type MotionValue } from "motion/react";
+import { animate, motion, useMotionTemplate, useMotionValue, useMotionValueEvent, type MotionValue } from "motion/react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { SHAKE_EVENT } from "./konami";
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 2.5;
-const GRID = 48;
 /** Screens at least this wide start zoomed out a little, so the whole board fits. */
 const LARGE_SCREEN = "(min-width: 1024px)";
 const LARGE_SCREEN_SCALE = 0.8;
+
+const trim = (n: number) => (Math.round(n * 100) / 100).toString();
 
 const CanvasContext = createContext<{ scale: MotionValue<number> } | null>(null);
 
@@ -34,16 +36,18 @@ export function Canvas({ children }: CanvasProps) {
   const y = useMotionValue(0);
   const s = useMotionValue(1);
   const transform = useMotionTemplate`translate(${x}px, ${y}px) scale(${s})`;
-  // The grid is painted on the untransformed stage and simply follows the view,
-  // which keeps the composited layer viewport-sized no matter how far you pan.
-  const gridSize = useTransform(s, (v) => `${GRID * v}px ${GRID * v}px`);
-  const gridPosition = useMotionTemplate`${x}px ${y}px`;
 
   /** The "home" view that reset returns to */
   const home = useRef({ x: 0, y: 0, s: 1 });
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const last = useRef<{ cx: number; cy: number; dist: number } | null>(null);
   const [panning, setPanning] = useState(false);
+  // Drawing scale for the title block: "1:1" at rest, "1:1.25" zoomed out to 0.8.
+  const [scaleLabel, setScaleLabel] = useState("1:1");
+  useMotionValueEvent(s, "change", (v) => {
+    const r = v >= 1 ? `${trim(v)}:1` : `1:${trim(1 / v)}`;
+    setScaleLabel((cur) => (cur === r ? cur : r));
+  });
 
   /** Keep at least 30% of the world inside the stage on each axis. */
   const clampPan = useCallback((nx: number, ny: number, ns: number) => {
@@ -186,7 +190,7 @@ export function Canvas({ children }: CanvasProps) {
   };
 
   const buttonClass =
-    "flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/30 bg-black text-white transition-colors hover:border-white hover:bg-white hover:text-black md:h-9 md:w-9";
+    "flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/30 bg-black text-white transition-colors hover:border-white hover:bg-white hover:text-black md:h-7 md:w-7";
 
   return (
     <CanvasContext.Provider value={{ scale: s }}>
@@ -197,27 +201,54 @@ export function Canvas({ children }: CanvasProps) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerEnd}
         onPointerCancel={onPointerEnd}
+        onDoubleClick={(e) => {
+          // Only the empty board: stickers and the deck stop this themselves.
+          const t = e.target as HTMLElement;
+          if (t === e.currentTarget || t.hasAttribute("data-world")) window.dispatchEvent(new CustomEvent(SHAKE_EVENT));
+        }}
         className={`absolute inset-0 select-none overflow-hidden ${panning ? "cursor-grabbing" : "cursor-grab"}`}
         style={{ touchAction: "pan-y" }}
       >
         <div aria-hidden="true" className="board-glow pointer-events-none absolute inset-0" />
-        <motion.div
-          aria-hidden="true"
-          className="board-grid pointer-events-none absolute inset-0"
-          style={{ backgroundSize: gridSize, backgroundPosition: gridPosition }}
-        />
-        <motion.div className="absolute inset-0 origin-top-left" style={{ transform }}>
+        <div aria-hidden="true" className="board-grid pointer-events-none absolute inset-0" />
+        <motion.div data-world="" className="absolute inset-0 origin-top-left" style={{ transform }}>
           {children}
         </motion.div>
       </div>
 
-      <p className="pointer-events-none absolute bottom-5 left-5 z-30 hidden font-mono text-xs text-white/40 md:block">
-        drag to pan · ⌘ + scroll or pinch to zoom
-      </p>
-      <div
-        className="absolute right-3 top-14 z-30 flex items-center gap-1.5 md:bottom-5 md:right-5 md:top-auto"
-        onPointerDown={(e) => e.stopPropagation()}
-      >
+      {/* Title block in the corner, the way a drawing sheet has one: bottom-right */}
+      <div className="pointer-events-none absolute bottom-5 right-5 z-30 hidden divide-x divide-[#f2efe8]/30 border border-[#f2efe8]/30 bg-[#0d2a63]/60 font-mono text-[10px] uppercase tracking-wider text-[#f2efe8]/70 backdrop-blur-sm md:flex">
+        <div className="px-3 py-1.5">
+          <div className="text-[8px] opacity-60">drawing</div>
+          <div className="font-bold text-[#f2efe8]">Marcus Ruud · Life</div>
+        </div>
+        <div className="px-3 py-1.5">
+          <div className="text-[8px] opacity-60">rev</div>
+          <div>2026.09</div>
+        </div>
+        <div className="px-3 py-1.5">
+          <div className="text-[8px] opacity-60">scale</div>
+          <div className="tabular-nums">{scaleLabel}</div>
+        </div>
+        <div className="px-3 py-1.5 normal-case tracking-normal">
+          <div className="text-[8px] uppercase tracking-wider opacity-60">controls</div>
+          <div>drag to pan · ⌘ + scroll or pinch to zoom · double-click to shake</div>
+        </div>
+        <div className="pointer-events-auto flex items-center gap-1 px-2" onPointerDown={(e) => e.stopPropagation()}>
+          <button type="button" onClick={() => zoomFromCenter(1 / 1.3)} aria-label="Zoom out" className={buttonClass}>
+            <Minus size={12} />
+          </button>
+          <button type="button" onClick={() => zoomFromCenter(1.3)} aria-label="Zoom in" className={buttonClass}>
+            <Plus size={12} />
+          </button>
+          <button type="button" onClick={() => reset()} aria-label="Reset view" className={buttonClass}>
+            <RotateCcw size={12} />
+          </button>
+        </div>
+      </div>
+
+      {/* Phones: the title block is hidden, so the controls stand alone up top */}
+      <div className="absolute right-3 top-14 z-30 flex items-center gap-1.5 md:hidden" onPointerDown={(e) => e.stopPropagation()}>
         <button type="button" onClick={() => zoomFromCenter(1 / 1.3)} aria-label="Zoom out" className={buttonClass}>
           <Minus size={14} />
         </button>

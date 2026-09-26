@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion, useMotionValue } from "motion/react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useAnimate, useMotionValue } from "motion/react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { SHAKE_EVENT, SPIN_EVENT } from "./konami";
 import { cn } from "@/lib/utils";
 import { useBubbles } from "./bubbles";
 import { useCanvasScale } from "./canvas";
@@ -71,6 +72,34 @@ function Pinned({
   const scale = useCanvasScale();
   const bubbles = useBubbles();
   const bodyRef = useRef<HTMLDivElement>(null);
+  const [fxRef, fx] = useAnimate();
+
+  // Board-wide effects: Konami spins everything, a double-click shakes it.
+  useEffect(() => {
+    const spin = () => {
+      const el = fxRef.current;
+      if (!el) return;
+      fx(el, { rotate: [0, 360], scale: [1, 1.25, 1] }, { duration: 0.7, delay: Math.random() * 0.5, ease: [0.3, 0, 0.2, 1] }).then(
+        () => fx(el, { rotate: 0 }, { duration: 0 })
+      );
+    };
+    const shake = () => {
+      const el = fxRef.current;
+      if (!el) return;
+      const amp = 4 + Math.random() * 6;
+      fx(
+        el,
+        { x: [0, -amp, amp, -amp * 0.6, amp * 0.6, 0], rotate: [0, -5, 5, -3, 3, 0] },
+        { duration: 0.55, delay: Math.random() * 0.15, ease: "easeInOut" }
+      );
+    };
+    window.addEventListener(SPIN_EVENT, spin);
+    window.addEventListener(SHAKE_EVENT, shake);
+    return () => {
+      window.removeEventListener(SPIN_EVENT, spin);
+      window.removeEventListener(SHAKE_EVENT, shake);
+    };
+  }, [fx, fxRef]);
   const hasBubble = Boolean(bubble && id);
   const isOpen = hasBubble && bubbles.openId === id;
   const dx = useMotionValue(0);
@@ -155,6 +184,7 @@ function Pinned({
         }}
         className={cn("touch-none select-none", dragging ? "cursor-grabbing" : hasBubble ? "cursor-pointer" : "cursor-grab")}
       >
+        <div ref={fxRef}>
         {href ? (
           <a
             href={href}
@@ -172,6 +202,7 @@ function Pinned({
         ) : (
           children
         )}
+        </div>
       </motion.div>
 
       {hasBubble && (
@@ -338,6 +369,56 @@ export function Polaroid({ src, alt, caption }: { src: string; alt: string; capt
       {caption && (
         <p className="mt-1.5 text-center font-mono text-[9px] font-bold text-black md:mt-2 md:text-[11px]">{caption}</p>
       )}
+    </div>
+  );
+}
+
+/** A row of keyboard keys on a cream sticker, for showing a key sequence */
+export function Keycaps({ keys }: { keys: string[] }) {
+  return (
+    <div
+      className="sticker-edge sticker-edge-thin flex items-center gap-1 rounded-xl px-2 py-1.5"
+      style={{ "--sticker-bg": "#f2efe8" } as React.CSSProperties}
+    >
+      {keys.map((k, i) => (
+        <span
+          key={i}
+          className="flex h-6 w-6 items-center justify-center rounded-[5px] border border-black/25 bg-white font-sans text-[12px] font-bold leading-none text-black shadow-[0_2px_0_rgba(0,0,0,0.3)]"
+        >
+          {k}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** Mini player: album art, title, artist. */
+export function TrackChip({
+  title,
+  artist,
+  art,
+  icon,
+  className,
+}: {
+  title: string;
+  artist: string;
+  art: string;
+  icon?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn("sticker-edge flex w-[210px] items-center gap-2.5 rounded-2xl p-2 pr-3 text-white", className)}
+      style={{ "--sticker-bg": "#000" } as React.CSSProperties}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={art} alt="" width={44} height={44} className="h-11 w-11 shrink-0 rounded-lg object-cover" draggable={false} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-mono text-[10px] font-bold uppercase tracking-wider text-white/50">last played</p>
+        <p className="truncate font-mono text-sm font-bold leading-tight">{title}</p>
+        <p className="truncate font-mono text-xs text-white/60">{artist}</p>
+      </div>
+      {icon && <span className="shrink-0 text-[#1db954]">{icon}</span>}
     </div>
   );
 }

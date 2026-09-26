@@ -3,8 +3,10 @@ import { Dock } from "@/components/projects/dock";
 import { Graveyard } from "@/components/projects/graveyard";
 import { PaperMode } from "@/components/projects/paper-mode";
 import { graveyardPrint } from "@/lib/graveyard-print";
+import { groupRepos } from "@/lib/repo-groups";
 import { Reel } from "@/components/projects/reel";
-import { RepoField } from "@/components/projects/repo-field";
+import { Buried } from "@/components/projects/buried";
+import { RepoSpiral } from "@/components/projects/repo-spiral";
 import { SectionTitle } from "@/components/projects/section-title";
 import { Wash } from "@/components/projects/wash";
 import { WorkGrid, type WorkItem } from "@/components/projects/work-grid";
@@ -17,35 +19,40 @@ export const metadata: Metadata = {
 
 export const revalidate = 300;
 
-const work: (WorkItem & { wash: { sm: string; lg: string } })[] = [
+const work: WorkItem[] = [
   {
     name: "trale.ai",
     status: "Production",
     note: "AI meeting intelligence platform at Supercompany. Records, transcribes and summarizes meetings, then handles prep and follow-up. Thousands of users.",
     href: "https://trale.ai",
-    image: "/projects/trale.jpg",
-    wash: { sm: "/projects/wash/trale.jpg", lg: "/projects/wash/trale-lg.jpg" },
-    place: "md:col-span-8",
+    image: "/projects/trale-print.jpg",
+    plate: "#122347",
+    brightness: 0.06,
+    fit: "contain",
+    aspect: "aspect-[2/3]",
+    place: "md:col-span-5 md:col-start-2",
   },
   {
     name: "lerret.app",
     status: "Production",
     note: "Browser based editor for screenshots and device mockups. 35 devices, annotations, and image or 60 fps video export, all rendered in the browser.",
     href: "https://lerret.app",
-    image: "/projects/lerret.jpg",
-    wash: { sm: "/projects/wash/lerret.jpg", lg: "/projects/wash/lerret-lg.jpg" },
-    aspect: "aspect-video",
-    place: "md:col-span-8 md:col-start-5 md:mt-[25vh] lg:mt-[40vh]",
+    image: "/projects/lerret-print.jpg",
+    plate: "#211b31",
+    brightness: 0.1,
+    aspect: "aspect-[3/2]",
+    place: "md:col-span-8 md:col-start-4 md:mt-[4vh] lg:mt-[6vh]",
   },
   {
     name: "personaforge.me",
     status: "Sold",
     note: "Persona and profile card editor. Templates, a visual editor, and export to PNG, JPG, WebP, HTML/CSS or JSX. Built, launched, and sold on.",
     href: "",
-    image: "/projects/personaforge-poster.jpg",
-    wash: { sm: "/projects/wash/personaforge-poster.jpg", lg: "/projects/wash/personaforge-poster-lg.jpg" },
-    video: "/projects/personaforge.mp4",
-    place: "md:col-span-7 md:col-start-2 lg:mt-[12vh]",
+    image: "/projects/personaforge-print.jpg",
+    plate: "#1c1b1f",
+    brightness: 0.06,
+    aspect: "aspect-[1600/1514]",
+    place: "md:col-span-6 md:col-start-2 lg:mt-[12vh]",
   },
 ];
 
@@ -64,6 +71,7 @@ const contact = [
 export default async function ProjectsPage() {
   const [repos, totalContributions] = await Promise.all([getPublicRepos(), getTotalContributions()]);
   const sorted = [...repos].sort((a, b) => (b.commits ?? 0) - (a.commits ?? 0));
+  const groups = groupRepos(repos);
 
   const titles = {
     hero: "Projects. Things I've shipped.",
@@ -76,7 +84,9 @@ export default async function ProjectsPage() {
     <>
       <SectionTitle initial={titles.hero} />
       <Dock />
-      <PaperMode targetId="graveyard" />
+      {/* Paper mode before first paint on a hard load. */}
+      <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('paper')" }} />
+      <PaperMode />
 
       <div data-section-title={titles.hero}>
         <Reel
@@ -88,10 +98,10 @@ export default async function ProjectsPage() {
         />
       </div>
 
-      <section data-section-title={titles.work} className="relative px-5 pb-48 pt-[30svh] md:px-8 md:pb-[50vh]">
-        <Wash srcs={work.map((w) => w.wash)} />
+      <section data-section-title={titles.work} className="relative px-5 pb-24 pt-[30svh] md:px-8 md:pb-[24vh]">
+        <Wash colors={work.map((w) => w.plate)} />
         <div className="relative z-10">
-        <div className="mb-32 grid gap-6 md:mb-44 md:grid-cols-2">
+        <div className="mb-16 grid gap-6 md:mb-20 md:grid-cols-2">
           <div className="font-mono text-base font-bold leading-snug md:text-lg">
             <h2 className="mb-2 font-medium text-muted-foreground">Lately</h2>
             <ul>
@@ -134,34 +144,54 @@ export default async function ProjectsPage() {
         </div>
       </section>
 
-      <section id="graveyard" data-section-title={titles.repos} className="paper-sheet relative pb-32 pt-[20svh]">
+      <section id="graveyard" data-section-title={titles.repos} className="paper-sheet relative pb-10 pt-[20svh]">
         <div className="paper-grain pointer-events-none absolute inset-0 opacity-30 mix-blend-multiply" aria-hidden="true" />
         <div className="relative mx-auto max-w-6xl px-5 md:px-8">
           <Graveyard src={graveyardPrint(sorted, totalContributions)} />
-          <div className="mt-24 md:mt-32">
-            <RepoField repos={sorted} />
-          </div>
+          {repos.length === 0 && (
+            <p className="mt-24 font-mono text-sm text-muted-foreground">GitHub is not answering right now. Check back later.</p>
+          )}
         </div>
+        {repos.length > 0 && (
+          <div className="relative mt-8 md:mt-12">
+            <RepoSpiral active={groups.active} dormant={groups.dormant} />
+          </div>
+        )}
+        {groups.buried.length > 0 && (
+          <div className="relative mt-24 md:mt-32">
+            <Buried rows={groups.buried} />
+          </div>
+        )}
       </section>
 
       <section
         data-section-title={titles.contact}
-        className="mx-auto flex min-h-[70svh] max-w-6xl items-end px-5 pb-16 md:px-8"
+        className="flex min-h-svh flex-col justify-end overflow-hidden px-5 pb-4 pt-32 md:px-8"
       >
-        <ul className="space-y-2 font-mono text-xl font-bold md:text-2xl">
-          {contact.map((it) => (
-            <li key={it.href}>
-              <a
-                href={it.href}
-                target={it.href.startsWith("mailto") ? undefined : "_blank"}
-                rel="noopener noreferrer"
-                className="underline decoration-border underline-offset-8 transition-colors hover:decoration-foreground"
-              >
-                {it.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="mx-auto w-full max-w-6xl">
+          <p className="font-mono text-xs text-muted-foreground">Oslo, Norway. I read every email.</p>
+          <ul className="mt-4 space-y-1.5 font-mono text-xl font-bold md:text-3xl">
+            {contact.map((it) => (
+              <li key={it.href}>
+                <a
+                  href={it.href}
+                  target={it.href.startsWith("mailto") ? undefined : "_blank"}
+                  rel="noopener noreferrer"
+                  className="underline decoration-border underline-offset-8 transition-colors hover:decoration-foreground"
+                >
+                  {it.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p
+          aria-hidden="true"
+          className="mt-16 w-full select-none whitespace-nowrap text-center font-mono font-bold leading-[0.82] tracking-[-0.04em] md:mt-24"
+          style={{ fontSize: "clamp(56px, calc((100vw - 2.5rem) / 6.4), 340px)" }}
+        >
+          MARCUS RUUD
+        </p>
       </section>
     </>
   );

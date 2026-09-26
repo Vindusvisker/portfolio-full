@@ -1,11 +1,11 @@
 import { Board } from "@/components/board/board";
-import { Lately } from "@/components/lately";
+
+// Live stickers (GitHub, Spotify) refresh every ten minutes.
+export const revalidate = 600;
 
 export default function Home() {
   return (
-    <>
-      <Board />
-      <Lately />
-    </>
+    // No fixed headline here: the badge and the note carry the name.
+    <Board />
   );
 }

@@ -1,3 +1,16 @@
+/**
+ * Headers for the GitHub REST API. With GITHUB_TOKEN set the limit is 5,000
+ * requests an hour instead of 60 per IP, which the projects page burns
+ * through quickly since it fetches a commit count per repo.
+ */
+function githubHeaders(): HeadersInit {
+  const token = process.env.GITHUB_TOKEN;
+  return {
+    Accept: "application/vnd.github.v3+json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
 export interface GitHubRepo {
   name: string;
   description: string | null;
@@ -56,7 +69,7 @@ async function getCommitCount(owner: string, repo: string): Promise<number> {
     const response = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/commits?per_page=1`,
       {
-        headers: { Accept: "application/vnd.github.v3+json" },
+        headers: githubHeaders(),
         next: { revalidate: 300 },
       }
     );
@@ -81,14 +94,15 @@ export async function getTotalContributions(): Promise<number> {
 }
 
 
+/** Repos that should not show up anywhere on the site, e.g. products that were sold on. */
+const HIDDEN_REPOS = new Set(["personaforge"]);
+
 export async function getPublicRepos(): Promise<(GitHubRepo & { commits: number })[]> {
   try {
     const response = await fetch(
       "https://api.github.com/users/vindusvisker/repos?per_page=100&sort=pushed&direction=desc",
       {
-        headers: {
-          Accept: "application/vnd.github.v3+json",
-        },
+        headers: githubHeaders(),
         next: { revalidate: 300 },
       }
     );
@@ -96,7 +110,7 @@ export async function getPublicRepos(): Promise<(GitHubRepo & { commits: number 
     if (!response.ok) return [];
 
     const repos: GitHubRepo[] = await response.json();
-    const filtered = repos.filter((repo) => !repo.fork);
+    const filtered = repos.filter((repo) => !repo.fork && !HIDDEN_REPOS.has(repo.name));
 
     const withCommits = await Promise.all(
       filtered.map(async (repo) => ({
@@ -109,4 +123,31 @@ export async function getPublicRepos(): Promise<(GitHubRepo & { commits: number 
   } catch {
     return [];
   }
+}
+
+export interface GitHubPulse {
+  /** Commits in the last 7 days, from the contribution calendar (includes private work) */
+  weekCommits: number;
+  /** Contributions over the last year */
+  yearCommits: number;
+  /** Consecutive days with at least one contribution, ending today or yesterday */
+  streak: number;
+}
+
+/** Activity summary for the home board, from the contribution calendar only. */
+export async function getPulse(): Promise<GitHubPulse> {
+  const contrib = await getContributions();
+  const days = [...contrib.days].sort((a, b) => a.date.localeCompare(b.date));
+  const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const weekCommits = days.filter((d) => new Date(d.date).getTime() >= cutoff).reduce((sum, d) => sum + d.count, 0);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const past = days.filter((d) => d.date <= today);
+  let streak = 0;
+  for (let i = past.length - 1; i >= 0; i--) {
+    if (past[i].count > 0) streak += 1;
+    else if (i === past.length - 1) continue; // today can still be empty
+    else break;
+  }
+  return { weekCommits, yearCommits: contrib.total, streak };
 }

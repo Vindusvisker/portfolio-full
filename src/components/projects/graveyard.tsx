@@ -16,7 +16,7 @@ export function Graveyard({ src }: { src: string }) {
   const [crumple, setCrumple] = useState(0);
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const fold = useTransform(scrollYProgress, [0.3, 0.7], [0, 1]);
+  const fold = useTransform(scrollYProgress, [0.38, 0.75], [0, 1]);
   useMotionValueEvent(fold, "change", (v) => {
     const next = Math.round(Math.min(1, Math.max(0, v)) * 100) / 100;
     setCrumple((c) => (c === next ? c : next));

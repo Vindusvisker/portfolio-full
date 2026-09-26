@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useScroll } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 export interface ReelItem {
@@ -68,7 +68,7 @@ void main() {
 
   // The sphere grows as the mask opens up, so it flattens out instead of
   // sitting as a ball inside the frame. Effects are gone by 85% scroll.
-  float glass = 1.0 - smoothstep(0.0, 0.85, u_p);
+  float glass = 1.0 - smoothstep(0.0, 0.7, u_p);
   float q = 1.0 - u_p * 0.995;
   float Rs = u_radius * (1.0 + 0.15 * u_p) / (q * q);
   float dist = min(length(px) / Rs, 0.995);
@@ -94,8 +94,9 @@ void main() {
   vec3 rainbow = 0.5 + 0.5 * cos(6.2831 * (phase + vec3(0.0, 0.33, 0.67)));
   col += rainbow * film * 0.6;
 
+  // A faint dark edge so the sphere keeps its outline on a light page.
   float rim = pow(1.0 - z, 3.0) * glass;
-  col = mix(col, vec3(1.0), rim * 0.85);
+  col = mix(col, vec3(0.06), rim * 0.7);
   vec2 hl = n - vec2(-0.38, 0.42);
   col += exp(-dot(hl, hl) * 12.0) * 0.45 * glass;
   float shade = smoothstep(-0.2, 1.0, -n.y) * 0.25 * glass;
@@ -128,6 +129,7 @@ export function Reel({ items }: { items: [ReelItem, ReelItem, ReelItem] }) {
 
   const { scrollYProgress } = useScroll({ target: wrap, offset: ["start start", "end end"] });
   useEffect(() => scrollYProgress.on("change", (v) => { progress.current = v; }), [scrollYProgress]);
+  const shadowOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -269,15 +271,20 @@ export function Reel({ items }: { items: [ReelItem, ReelItem, ReelItem] }) {
   }
 
   return (
-    <div ref={wrap} className="relative h-[220svh]">
+    <div ref={wrap} className="relative h-[150svh]">
       <div className="sticky top-0 h-svh overflow-hidden">
-        <canvas ref={canvasRef} className="block h-full w-full" aria-hidden="true" />
+        <motion.div
+          aria-hidden="true"
+          style={{ opacity: shadowOpacity }}
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[9vmin] w-[38vmin] -translate-x-1/2 translate-y-[17vmin] rounded-[100%] bg-[radial-gradient(closest-side,rgba(26,23,19,0.28),transparent)]"
+        />
+        <canvas ref={canvasRef} className="relative block h-full w-full" aria-hidden="true" />
         <ul className="sr-only">
           {items.map((it) => (
             <li key={it.src}>{it.alt}</li>
           ))}
         </ul>
-        <p className="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-xs text-white/60">↓ scroll</p>
+        <p className="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-xs text-muted-foreground">↓ scroll</p>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import { useEffect, useReducer, useRef, useState } from "react";
  * `data-section-title`, and as each one scrolls past the top third of the
  * viewport the headline erases and retypes itself, glyph by glyph.
  */
-export function SectionTitle({ initial }: { initial: string }) {
+export function SectionTitle({ initial, className = "" }: { initial: string; className?: string }) {
   const [target, setTarget] = useState(initial);
   const anim = useRef({ shown: initial, count: initial.length });
   const [, rerender] = useReducer((n: number) => n + 1, 0);
@@ -86,7 +86,7 @@ export function SectionTitle({ initial }: { initial: string }) {
 
   return (
     <h1
-      className="pointer-events-none fixed left-5 top-[72px] z-30 max-w-[min(26em,calc(100vw-2.5rem))] font-mono text-base font-bold leading-snug text-white mix-blend-difference md:left-8 md:top-4 md:flex md:min-h-[44px] md:max-w-[min(28em,calc(100vw-24rem))] md:items-center md:text-xl"
+      className={`pointer-events-none fixed left-5 top-[72px] z-30 max-w-[min(26em,calc(100vw-2.5rem))] font-display text-xl font-semibold uppercase leading-none tracking-wide text-white mix-blend-difference md:left-8 md:top-4 md:flex md:min-h-[44px] md:max-w-[min(30em,calc(100vw-24rem))] md:items-center md:text-[26px] ${className}`}
       aria-live="polite"
     >
       <span className="sr-only">{target}</span>
