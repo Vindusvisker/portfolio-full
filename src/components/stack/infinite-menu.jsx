@@ -23,6 +23,8 @@ in mat4 aInstanceMatrix;
 
 out vec2 vUvs;
 out float vAlpha;
+out vec3 vWorldNormal;
+out vec3 vWorldPos;
 flat out int vInstanceId;
 
 #define PI 3.141593
@@ -49,6 +51,8 @@ void main() {
     gl_Position = uProjectionMatrix * uViewMatrix * worldPosition;
 
     vAlpha = smoothstep(0.5, 1., normalize(worldPosition.xyz).z) * .9 + .1;
+    vWorldNormal = normalize(worldPosition.xyz);
+    vWorldPos = worldPosition.xyz;
     vUvs = aModelUvs;
     vInstanceId = gl_InstanceID;
 }
@@ -60,12 +64,19 @@ precision highp float;
 uniform sampler2D uTex;
 uniform int uItemCount;
 uniform int uAtlasSize;
+uniform vec3 uCameraPosition;
 
 out vec4 outColor;
 
 in vec2 vUvs;
 in float vAlpha;
+in vec3 vWorldNormal;
+in vec3 vWorldPos;
 flat in int vInstanceId;
+
+// One key light, up and to the left of the camera. Shared with the body shader.
+const vec3 LIGHT = normalize(vec3(-0.55, 0.75, 0.6));
+const vec3 GLASS = vec3(0.95, 0.96, 1.0);
 
 void main() {
     int itemIndex = vInstanceId % uItemCount;
@@ -89,8 +100,28 @@ void main() {
 
     st = st * cellSize + cellOffset;
 
-    outColor = texture(uTex, st);
-    outColor.a *= vAlpha;
+    vec4 base = texture(uTex, st);
+
+    // Glass: the tile sits on a glossy sphere, so it catches the key light as
+    // a broad sheen plus a tight hot spot, and lightens at grazing angles.
+    vec3 N = normalize(vWorldNormal);
+    vec3 V = normalize(uCameraPosition - vWorldPos);
+    vec3 H = normalize(LIGHT + V);
+    float NdH = max(dot(N, H), 0.);
+    float sheen = pow(NdH, 14.) * 0.16;
+    float spot = pow(NdH, 90.) * 0.32;
+    float fresnel = pow(1. - max(dot(N, V), 0.), 3.) * 0.22;
+
+    // Each disc is its own lens: a soft reflection up-left and a thin bright
+    // arc along the upper rim, fading out toward the bottom.
+    float lens = (1. - smoothstep(0.0, 0.34, length(vUvs - vec2(0.36, 0.7)))) * 0.07;
+    float r = length(vUvs - 0.5) * 2.;
+    float upper = smoothstep(-0.1, 0.8, (vUvs.y - 0.5) - (vUvs.x - 0.5) * 0.35);
+    float arc = smoothstep(0.82, 0.93, r) * (1. - smoothstep(0.93, 1.0, r)) * upper * 0.26;
+    float grade = 0.035 * (vUvs.y - 0.5);
+
+    vec3 rgb = base.rgb + GLASS * (sheen + spot + fresnel + lens + arc + grade);
+    outColor = vec4(rgb, base.a * vAlpha);
 }
 `;
 
@@ -125,10 +156,14 @@ in vec3 vWorldPos;
 
 out vec4 outColor;
 
+const vec3 LIGHT = normalize(vec3(-0.55, 0.75, 0.6));
+
 void main() {
     vec3 toCamera = normalize(uCameraPosition - vWorldPos);
     float rim = pow(1. - max(0., dot(vNormal, toCamera)), 3.);
-    outColor = vec4(mix(uBodyColor, uRimColor, rim), 1.);
+    vec3 halfway = normalize(LIGHT + toCamera);
+    float spec = pow(max(dot(vNormal, halfway), 0.), 20.) * 0.22;
+    outColor = vec4(mix(uBodyColor, uRimColor, rim) + spec, 1.);
 }
 `;
 
@@ -790,7 +825,8 @@ class InfiniteGridMenu {
     this.control.update(deltaTime, this.TARGET_FRAME_DURATION);
 
     let positions = this.instancePositions.map(p => vec3.transformQuat(vec3.create(), p, this.control.orientation));
-    const scale = 0.25;
+    // Disc radius as a share of the sphere radius. Vertex spacing after two subdivisions is about 0.26 R, so 0.25 overlaps; 0.215 leaves a hairline of body between neighbours.
+    const scale = 0.215;
     const SCALE_INTENSITY = 0.6;
     positions.forEach((p, ndx) => {
       const s = (Math.abs(p[2]) / this.SPHERE_RADIUS) * SCALE_INTENSITY + (1 - SCALE_INTENSITY);

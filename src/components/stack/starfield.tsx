@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { ROUTE_REVEAL_EVENT, routeCovered, routeRevealedAt } from "@/components/route-transition";
 
 /** Seconds for the warp streaks to settle into still stars */
-const SETTLE = 1.4;
+const SETTLE = 2.2;
 const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
 
 interface Star {

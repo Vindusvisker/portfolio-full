@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 /** The trale.ai mark: three overlapping circles on a rounded square. */
@@ -57,8 +56,11 @@ export function MeetingTile() {
       </div>
 
       <div className="grid grid-cols-2 gap-1 px-1">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-black">
-          <Image src="/profile.jpg" alt="" fill sizes="110px" className="object-cover" draggable={false} />
+        <div className="relative flex aspect-[4/3] items-center justify-center rounded-md bg-[#0a0a0a]">
+          {/* Camera off: initial in a circle, like a call tile */}
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2a2a2e] font-sans text-[11px] font-semibold leading-none text-white/85">
+            M
+          </span>
           <span className="absolute bottom-1 left-1 rounded-[3px] bg-[#f6f6f4] px-1 py-px font-sans text-[8px] font-medium leading-tight text-black">
             Marcus
           </span>

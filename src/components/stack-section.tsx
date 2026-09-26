@@ -19,11 +19,11 @@ export function StackSection({
 }) {
   return (
     <div>
-      <h2 className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+      <h2 className="font-display text-2xl font-semibold uppercase leading-none tracking-wide md:text-3xl">
         {category}
       </h2>
       <div className="mt-4">
-        <FoldText inView className="text-xl font-bold leading-snug md:text-3xl">
+        <FoldText inView className="font-sans text-lg leading-snug text-foreground/90 md:text-2xl">
           {description}
         </FoldText>
       </div>
@@ -40,9 +40,9 @@ export function StackSection({
               ) : (
                 <span className="shrink-0 w-4 h-4" />
               )}
-              <span className="shrink-0 text-sm font-medium">{item.name}</span>
+              <span className="shrink-0 font-mono text-sm font-bold">{item.name}</span>
               <span className="hidden h-px flex-1 bg-border/50 sm:block" />
-              <span className="text-xs text-muted-foreground">{item.note}</span>
+              <span className="font-sans text-xs text-muted-foreground sm:text-right">{item.note}</span>
             </div>
           );
         })}

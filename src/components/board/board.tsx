@@ -47,7 +47,7 @@ export async function Board() {
         <BubbleProvider>
       {/* Phones get a flat portrait; desktops get the badge on a lanyard */}
       <Sticker id="me" bubble="That's me. I'm a developer from Norway, studying Data Science on the side." desktop={{ x: 50, y: 15, rotate: 0 }} mobile={{ x: 50, y: 15 }} z={5} className="md:hidden">
-        <div className="sticker-edge relative h-[clamp(120px,20vh,280px)] w-[clamp(120px,20vh,280px)] overflow-hidden rounded-[38%] !border-4" style={{ "--sticker-bg": "#000" } as React.CSSProperties}>
+        <div className="sticker-edge relative h-[clamp(120px,20vh,280px)] w-[clamp(120px,20vh,280px)] overflow-hidden rounded-[38%] !border-[3px]" style={{ "--sticker-bg": "#000" } as React.CSSProperties}>
           <Image
             src="/profile.jpg"
             alt="Marcus Ruud"

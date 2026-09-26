@@ -204,6 +204,14 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile, hangAt, frontImage, backI
       ctx.rect(rx, ry, rw, rh);
       ctx.clip();
       ctx.drawImage(img, rx + (rw - dw) / 2, ry + (rh - dh) / 2, dw, dh);
+      // Same cream edge the stickers wear, painted just inside the face so it survives the rounded corners.
+      const bw = rw * 0.02;
+      const r = rw * 0.075;
+      ctx.beginPath();
+      ctx.roundRect(rx + bw / 2, ry + bw / 2, rw - bw, rh - bw, r);
+      ctx.lineWidth = bw;
+      ctx.strokeStyle = "#f4f1ea";
+      ctx.stroke();
       ctx.restore();
     };
 

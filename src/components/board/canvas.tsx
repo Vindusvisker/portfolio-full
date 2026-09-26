@@ -1,10 +1,14 @@
 "use client";
 
-import { animate, motion, useMotionTemplate, useMotionValue, useMotionValueEvent, type MotionValue } from "motion/react";
+import { animate, motion, useMotionTemplate, useMotionValue, type MotionValue } from "motion/react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { SHAKE_EVENT } from "./konami";
 import { ROUTE_REVEAL_EVENT, routeCovered } from "@/components/route-transition";
+
+// The pixel field behind the board is WebGL, so it only loads in the browser.
+const PixelBlast = dynamic(() => import("./pixel-blast"), { ssr: false });
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 2.5;
@@ -34,7 +38,6 @@ const ARRIVE = {
 };
 const ARRIVE_EASE = [0.2, 0.8, 0.2, 1] as const;
 
-const trim = (n: number) => (Math.round(n * 100) / 100).toString();
 
 const CanvasContext = createContext<{ scale: MotionValue<number> } | null>(null);
 
@@ -65,12 +68,6 @@ export function Canvas({ children }: CanvasProps) {
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const last = useRef<{ cx: number; cy: number; dist: number } | null>(null);
   const [panning, setPanning] = useState(false);
-  // Drawing scale for the title block: "1:1" at rest, "1:1.25" zoomed out to 0.8.
-  const [scaleLabel, setScaleLabel] = useState("1:1");
-  useMotionValueEvent(s, "change", (v) => {
-    const r = v >= 1 ? `${trim(v)}:1` : `1:${trim(1 / v)}`;
-    setScaleLabel((cur) => (cur === r ? cur : r));
-  });
 
   const worldRef = useRef<HTMLDivElement>(null);
 
@@ -300,8 +297,27 @@ export function Canvas({ children }: CanvasProps) {
         className={`absolute inset-0 select-none overflow-hidden ${panning ? "cursor-grabbing" : "cursor-grab"}`}
         style={{ touchAction: "none" }}
       >
-        <div aria-hidden="true" className="board-glow pointer-events-none absolute inset-0" />
-        <div aria-hidden="true" className="board-grid pointer-events-none absolute inset-0" />
+        {/* Dithered pixel field under everything. It reads the stage's pointer events, so it stays pointer-transparent. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          {/* No liquid pass and a 1x pixel ratio: one full-screen shader, no composer, the lanyard needs the GPU too. */}
+          <PixelBlast
+            variant="circle"
+            pixelSize={4}
+            color="#9a958b"
+            patternScale={2.5}
+            patternDensity={1.15}
+            pixelSizeJitter={0.4}
+            enableRipples
+            rippleSpeed={0.4}
+            rippleThickness={0.12}
+            rippleIntensityScale={1.5}
+            speed={0.5}
+            edgeFade={0.3}
+            transparent
+            maxPixelRatio={1}
+            eventSource="[data-stage]"
+          />
+        </div>
         <motion.div
           ref={worldRef}
           data-world=""
@@ -312,21 +328,9 @@ export function Canvas({ children }: CanvasProps) {
         </motion.div>
       </div>
 
-      {/* Title block in the corner, the way a drawing sheet has one: bottom-right */}
-      <div className="pointer-events-none absolute bottom-5 right-5 z-30 hidden divide-x divide-[#f2efe8]/30 border border-[#f2efe8]/30 bg-[#0a0a0b]/70 font-mono text-[10px] uppercase tracking-wider text-[#f2efe8]/70 backdrop-blur-sm md:flex">
-        <div className="px-3 py-1.5">
-          <div className="text-[8px] opacity-60">drawing</div>
-          <div className="font-bold text-[#f2efe8]">Marcus Ruud · Life</div>
-        </div>
-        <div className="px-3 py-1.5">
-          <div className="text-[8px] opacity-60">rev</div>
-          <div>2026.09</div>
-        </div>
-        <div className="px-3 py-1.5">
-          <div className="text-[8px] opacity-60">scale</div>
-          <div className="tabular-nums">{scaleLabel}</div>
-        </div>
-        <div className="hidden px-3 py-1.5 normal-case tracking-normal lg:block">
+      {/* Controls strip in the corner where a drawing sheet keeps its title block: bottom-right */}
+      <div className="pointer-events-none absolute bottom-5 right-5 z-30 hidden overflow-hidden rounded-lg divide-x divide-[#f2efe8]/30 border border-[#f2efe8]/30 bg-[#0a0a0b]/70 font-mono text-[10px] uppercase tracking-wider text-[#f2efe8]/70 backdrop-blur-sm md:flex">
+        <div className="px-3 py-1.5 normal-case tracking-normal">
           <div className="text-[8px] uppercase tracking-wider opacity-60">controls</div>
           <div>drag to pan · ⌘ + scroll or pinch to zoom · double-click to shake</div>
         </div>

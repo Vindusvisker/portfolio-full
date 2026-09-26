@@ -112,9 +112,9 @@ export default async function ProjectsPage() {
       >
         <Wash colors={work.map((w) => w.plate)} />
         <div className="relative z-10">
-        <div className="mb-16 grid gap-6 md:mb-20 md:grid-cols-2">
+        <div className="mb-16 grid gap-6 md:mb-20 md:grid-cols-2 lg:mb-28 lg:pl-10">
           <div className="font-mono text-base font-bold leading-snug md:text-lg">
-            <h2 className="mb-2 font-medium text-muted-foreground">Lately</h2>
+            <h2 className="mb-2 font-display text-2xl font-semibold uppercase leading-none tracking-wide md:text-3xl">Lately</h2>
             <ul>
               {lately.map((it) => (
                 <li key={it.label}>
@@ -182,14 +182,14 @@ export default async function ProjectsPage() {
       >
         <div className="mx-auto w-full max-w-6xl">
           <p className="font-mono text-xs text-muted-foreground">Oslo, Norway. I read every email.</p>
-          <ul className="mt-4 space-y-1.5 font-mono text-xl font-bold md:text-3xl">
+          <ul className="mt-4 space-y-2 font-display text-3xl font-semibold uppercase leading-none tracking-wide md:text-5xl">
             {contact.map((it) => (
               <li key={it.href}>
                 <a
                   href={it.href}
                   target={it.href.startsWith("mailto") ? undefined : "_blank"}
                   rel="noopener noreferrer"
-                  className="underline decoration-border underline-offset-8 transition-colors hover:decoration-foreground"
+                  className="underline decoration-border decoration-2 underline-offset-[8px] transition-colors hover:decoration-foreground"
                 >
                   {it.label}
                 </a>
@@ -199,8 +199,8 @@ export default async function ProjectsPage() {
         </div>
         <p
           aria-hidden="true"
-          className="mt-16 w-full select-none whitespace-nowrap text-center font-mono font-bold leading-[0.82] tracking-[-0.04em] md:mt-24"
-          style={{ fontSize: "clamp(56px, calc((100vw - 2.5rem) / 6.4), 340px)" }}
+          className="mt-16 w-full select-none whitespace-nowrap text-center font-display font-bold uppercase leading-[0.8] tracking-[-0.01em] md:mt-24"
+          style={{ fontSize: "clamp(72px, calc((100vw - 2.5rem) / 4.9), 460px)" }}
         >
           MARCUS RUUD
         </p>

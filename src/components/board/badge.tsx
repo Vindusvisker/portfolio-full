@@ -80,7 +80,7 @@ export function Badge() {
           height={REST.h}
           priority
           draggable={false}
-          className="h-full w-full rounded-[16px] object-cover shadow-[0_30px_50px_-20px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.15)]"
+          className="h-full w-full rounded-[16px] border-[3px] border-[#f4f1ea] object-cover shadow-[0_30px_50px_-20px_rgba(0,0,0,0.8)]"
         />
       </motion.div>
 

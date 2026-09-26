@@ -18,7 +18,7 @@ type GlobeMenuItem = GlobeItem & { image: string };
 
 const VISIBLE = { landscape: 0.62, portrait: 0.9 };
 // The planet under the discs: a touch above the page black, lifting at the limb.
-const BODY = { color: "#0b0b0b", rim: "#242424", radius: 0.7 };
+const BODY = { color: "#0b0b0b", rim: "#383838", radius: 0.7 };
 const TILE = 256;
 const ICON = 112;
 
@@ -131,7 +131,7 @@ export function StackGlobe({ items, className }: { items: GlobeItem[]; className
           transform: arrived ? "scale(1)" : "scale(0.06)",
           opacity: arrived ? 1 : 0,
           // Slow start, so it reads as approaching from far off, then settles.
-          transition: "transform 1.7s cubic-bezier(0.45, 0, 0.15, 1), opacity 0.6s ease-out",
+          transition: "transform 2.5s cubic-bezier(0.45, 0, 0.15, 1), opacity 0.9s ease-out",
         }}
       >
       {menuItems && (

@@ -65,11 +65,28 @@
 }
 
 /* Crumpled paper over the near-black board (public/home/paper.jpg, rendered from an SVG lighting filter).
-   Overlay keeps the base dark while letting the creases show; multiply would go flat black. */
+   The JPG is nearly flat (99–114 of 255, mean below mid-grey), so raw overlay reads as plain black.
+   Brightness lifts its mean to mid-grey, contrast stretches the creases, then overlay multiplies them into the base. */
 .board-grid {
   background: url("/home/paper.jpg") center / cover no-repeat;
+  filter: brightness(1.16) contrast(8);
   mix-blend-mode: overlay;
-  opacity: 0.75;
+}
+
+/* Pixel blast: dithered pixel field behind the board (src/components/board/pixel-blast.jsx) */
+.pixel-blast-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fine paper tooth on top of the creases so the board reads as matte stock, not a hex value */
+.board-tooth {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  mix-blend-mode: overlay;
+  opacity: 0.5;
 }
 
 /* White die-cut outline for stickers with transparent edges */
