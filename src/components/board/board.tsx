@@ -89,16 +89,16 @@ export async function Board() {
       </Sticker>
       <Sticker
         desktop={{ x: 66, y: 87, rotate: -6 }}
-        mobile={{ x: 30, y: 92, rotate: -6 }}
+        mobile={{ x: 21, y: 93, rotate: -6 }}
         href="mailto:marcruud@gmail.com"
         label="Email Marcus"
       >
         <Label inverted>Email me!</Label>
       </Sticker>
-      <Sticker desktop={{ x: 50, y: 84, rotate: 5 }} mobile={{ x: 72, y: 92, rotate: 5 }} href="/resume.pdf" label="Download CV">
+      <Sticker desktop={{ x: 50, y: 84, rotate: 5 }} mobile={{ x: 68, y: 92, rotate: 5 }} href="/resume.pdf" label="Download CV">
         <Label inverted>CV ↗</Label>
       </Sticker>
-      <Sticker desktop={{ x: 92, y: 44, rotate: -4 }} href="https://lerret.app" label="lerret.app">
+      <Sticker desktop={{ x: 92, y: 44, rotate: -4 }} mobile={{ x: -22, y: 132, rotate: -4 }} href="https://lerret.app" label="lerret.app">
         <Label inverted>lerret.app ↗</Label>
       </Sticker>
 
@@ -119,57 +119,57 @@ export async function Board() {
             </a>
           </>
         }
-        desktop={{ x: 61, y: 13, rotate: -2 }}
+        desktop={{ x: 61, y: 13, rotate: -2 }} mobile={{ x: 118, y: 122, rotate: -3 }}
         label="trale.ai, currently building"
       >
         <MeetingTile />
       </Sticker>
-      <Sticker desktop={{ x: 54, y: 27, rotate: -2 }} mobile={{ x: 54, y: 27, rotate: -2 }} href="https://trale.ai" label="trale.ai" className="md:hidden">
+      <Sticker desktop={{ x: 54, y: 27, rotate: -2 }} mobile={{ x: 58, y: 28, rotate: -2 }} href="https://trale.ai" label="trale.ai" className="md:hidden">
         <Label>currently building trale.ai ↗</Label>
       </Sticker>
 
       {/* Stack */}
-      <Sticker id="next" bubble="Next.js is my preferred framework. App Router, full-stack, one codebase for the whole product." desktop={{ x: 43, y: 30, rotate: -8 }} mobile={{ x: 10, y: 93, rotate: -8 }}>
+      <Sticker id="next" bubble="Next.js is my preferred framework. App Router, full-stack, one codebase for the whole product." desktop={{ x: 43, y: 30, rotate: -8 }} mobile={{ x: 50, y: -15, rotate: -8 }}>
         <LogoChip>
           <SiNextdotjs size={36} />
         </LogoChip>
       </Sticker>
-      <Sticker id="react" bubble="React is my preferred UI library. It's the one I've spent the most hours in." desktop={{ x: 42, y: 46, rotate: 6 }}>
+      <Sticker id="react" bubble="React is my preferred UI library. It's the one I've spent the most hours in." desktop={{ x: 42, y: 46, rotate: 6 }} mobile={{ x: 22, y: -13, rotate: 6 }}>
         <LogoChip color="#61dafb" bg="#111">
           <SiReact size={36} />
         </LogoChip>
       </Sticker>
-      <Sticker id="ts" bubble="I prefer TypeScript over plain JavaScript. The types catch what I'd otherwise catch in production." desktop={{ x: 6, y: 13, rotate: -4 }}>
+      <Sticker id="ts" bubble="I prefer TypeScript over plain JavaScript. The types catch what I'd otherwise catch in production." desktop={{ x: 6, y: 13, rotate: -4 }} mobile={{ x: 78, y: -13, rotate: -6 }}>
         <LogoChip bg="#3178c6" color="#fff">
           <SiTypescript size={34} />
         </LogoChip>
       </Sticker>
-      <Sticker id="supabase" bubble="Supabase is my preferred backend. Postgres, auth, realtime, storage and embeddings in one place." desktop={{ x: 4, y: 46, rotate: 8 }}>
+      <Sticker id="supabase" bubble="Supabase is my preferred backend. Postgres, auth, realtime, storage and embeddings in one place." desktop={{ x: 4, y: 46, rotate: 8 }} mobile={{ x: -27, y: 21, rotate: 5 }}>
         <LogoChip color="#3ecf8e" bg="#111">
           <SiSupabase size={34} />
         </LogoChip>
       </Sticker>
-      <Sticker id="tailwind" bubble="I prefer Tailwind for styling. I care a lot about how things feel, and it lets me iterate fast." desktop={{ x: 6, y: 35, rotate: -6 }}>
+      <Sticker id="tailwind" bubble="I prefer Tailwind for styling. I care a lot about how things feel, and it lets me iterate fast." desktop={{ x: 6, y: 35, rotate: -6 }} mobile={{ x: -20, y: 34, rotate: -5 }}>
         <LogoChip color="#38bdf8" bg="#111">
           <SiTailwindcss size={36} />
         </LogoChip>
       </Sticker>
-      <Sticker id="postgres" bubble="PostgreSQL is my preferred database. It has handled everything I've thrown at it so far." desktop={{ x: 88, y: 34, rotate: 6 }}>
+      <Sticker id="postgres" bubble="PostgreSQL is my preferred database. It has handled everything I've thrown at it so far." desktop={{ x: 88, y: 34, rotate: 6 }} mobile={{ x: 126, y: 21, rotate: -5 }}>
         <LogoChip color="#fff" bg="#336791">
           <SiPostgresql size={34} />
         </LogoChip>
       </Sticker>
-      <Sticker id="vercel" bubble="I prefer deploying on Vercel. Push to main and it's live, this site included." desktop={{ x: 96, y: 66, rotate: -5 }}>
+      <Sticker id="vercel" bubble="I prefer deploying on Vercel. Push to main and it's live, this site included." desktop={{ x: 96, y: 66, rotate: -5 }} mobile={{ x: 119, y: 34, rotate: 5 }}>
         <LogoChip bg="#000" color="#fff">
           <SiVercel size={30} />
         </LogoChip>
       </Sticker>
-      <Sticker id="python" bubble="I use Python for data science and analysis. pandas, scikit-learn and Jupyter, mostly for my studies." desktop={{ x: 78, y: 92, rotate: 7 }}>
+      <Sticker id="python" bubble="I use Python for data science and analysis. pandas, scikit-learn and Jupyter, mostly for my studies." desktop={{ x: 78, y: 92, rotate: 7 }} mobile={{ x: 127, y: 48, rotate: -6 }}>
         <LogoChip color="#3776ab">
           <SiPython size={36} />
         </LogoChip>
       </Sticker>
-      <Sticker id="bun" bubble="I prefer Bun over npm. Faster installs, faster runtime, less waiting." desktop={{ x: 4, y: 24, rotate: -8 }}>
+      <Sticker id="bun" bubble="I prefer Bun over npm. Faster installs, faster runtime, less waiting." desktop={{ x: 4, y: 24, rotate: -8 }} mobile={{ x: -27, y: 48, rotate: 6 }}>
         <LogoChip bg="#fbf0df" color="#000">
           <SiBun size={36} />
         </LogoChip>
@@ -179,7 +179,7 @@ export async function Board() {
         id="spotify"
         bubble={<SpotifyBubble />}
         desktop={{ x: 58, y: 94, rotate: 3 }}
-        mobile={{ x: 52, y: 93, rotate: 5 }}
+        mobile={{ x: 48, y: 93, rotate: 5 }}
         label="Recently played on Spotify"
       >
         {lastTrack ? (
@@ -227,7 +227,7 @@ export async function Board() {
               </span>
             </>
           }
-          desktop={{ x: 22, y: 76, rotate: -4 }}
+          desktop={{ x: 22, y: 76, rotate: -4 }} mobile={{ x: 30, y: 111, rotate: -3 }}
           label="GitHub activity"
         >
           <Label>⚡ {pulse.weekCommits} commits this week</Label>
@@ -258,7 +258,7 @@ export async function Board() {
           </>
         }
         desktop={{ x: 88, y: 60, rotate: 6 }}
-        mobile={{ x: 12, y: 24, rotate: -6 }}
+        mobile={{ x: 11, y: 24, rotate: -6 }}
         label="Marathon photo"
       >
         <Polaroid src="/home/marathon-photo.jpg" alt="Marcus running his first marathon" caption="first marathon ✓" />
@@ -271,23 +271,23 @@ export async function Board() {
             <span className="mt-3 block text-sm font-normal text-white/60">Brede Y. S. Kristensen, Trale AI</span>
           </>
         }
-        desktop={{ x: 87, y: 77, rotate: 3 }}
+        desktop={{ x: 87, y: 77, rotate: 3 }} mobile={{ x: 128, y: 106, rotate: 3 }}
         label="What people say"
       >
         <Label>★ said about me</Label>
       </Sticker>
-      <Sticker id="norway" bubble="I was born in Norway and still live here. Cold and dark half the year, which is great for shipping." desktop={{ x: 83, y: 8, rotate: 10 }}>
+      <Sticker id="norway" bubble="I was born in Norway and still live here. Cold and dark half the year, which is great for shipping." desktop={{ x: 83, y: 8, rotate: 10 }} mobile={{ x: -21, y: 62, rotate: -6 }}>
         <Emoji>🇳🇴</Emoji>
       </Sticker>
-      <Sticker desktop={{ x: 6, y: 57, rotate: -3 }}>
+      <Sticker desktop={{ x: 6, y: 57, rotate: -3 }} mobile={{ x: -24, y: 118, rotate: -3 }}>
         <Label>
           <NorwayClock />
         </Label>
       </Sticker>
-      <Sticker id="movies" bubble="I watch a lot of movies when I'm not coding. Send me recommendations." desktop={{ x: 37, y: 62, rotate: 6 }}>
+      <Sticker id="movies" bubble="I watch a lot of movies when I'm not coding. Send me recommendations." desktop={{ x: 37, y: 62, rotate: 6 }} mobile={{ x: -27, y: 76, rotate: 5 }}>
         <Emoji>🎬</Emoji>
       </Sticker>
-      <Sticker id="school" bubble="I'm studying Data Science at Noroff alongside work. I wanted to understand what actually happens under the hood of the AI tools I build every day." desktop={{ x: 75, y: 17, rotate: -6 }}>
+      <Sticker id="school" bubble="I'm studying Data Science at Noroff alongside work. I wanted to understand what actually happens under the hood of the AI tools I build every day." desktop={{ x: 75, y: 17, rotate: -6 }} mobile={{ x: 120, y: 92, rotate: 5 }}>
         <Emoji>🎓</Emoji>
       </Sticker>
       {/* Before code, one chapter per sticker. Swap any for a <Polaroid> when there's a photo. */}
@@ -295,15 +295,15 @@ export async function Board() {
         id="crane"
         bubble="I worked four years as a crane signalman at a shipyard. I was part of the crew that built the Johan Castberg oil tanker."
         desktop={{ x: 7, y: 68, rotate: -8 }}
-        mobile={{ x: 90, y: 93, rotate: -8 }}
+        mobile={{ x: 88, y: 93, rotate: -8 }}
         label="Crane"
       >
         <Emoji>🏗️</Emoji>
       </Sticker>
-      <Sticker id="military" bubble="I served two years in the Norwegian Army, where I completed Lagførerskolen, the army's squad leader school." desktop={{ x: 17, y: 93, rotate: 6 }} label="Military">
+      <Sticker id="military" bubble="I served two years in the Norwegian Army, where I completed Lagførerskolen, the army's squad leader school." desktop={{ x: 17, y: 93, rotate: 6 }} mobile={{ x: -20, y: 90, rotate: -4 }} label="Military">
         <Emoji>🪖</Emoji>
       </Sticker>
-      <Sticker id="solvify" bubble="I ran Solvify, a company doing outbound sales automation for early-stage startups. That's where I started building software." desktop={{ x: 7, y: 86, rotate: -3 }} label="Solvify">
+      <Sticker id="solvify" bubble="I ran Solvify, a company doing outbound sales automation for early-stage startups. That's where I started building software." desktop={{ x: 7, y: 86, rotate: -3 }} mobile={{ x: -28, y: 104, rotate: 3 }} label="Solvify">
         <div className="sticker-edge sticker-edge-thin flex items-center rounded-xl px-3 py-2" style={{ "--sticker-bg": "#060a09" } as React.CSSProperties}>
           <Image src="/projects/solvify.png" alt="Solvify Digital" width={130} height={40} className="h-8 w-auto" draggable={false} />
         </div>
@@ -311,15 +311,15 @@ export async function Board() {
       <Sticker
         id="cheat"
         bubble="This is an old cheat code. Click anywhere on the board, then type it on your keyboard."
-        desktop={{ x: 36, y: 82, rotate: -3 }}
+        desktop={{ x: 36, y: 82, rotate: -3 }} mobile={{ x: 48, y: 126, rotate: 2 }}
         label="Cheat code"
       >
         <Keycaps keys={["↑", "↑", "↓", "↓", "←", "→", "←", "→", "B", "A"]} />
       </Sticker>
-      <Sticker id="gym" bubble="I train most days. Gym through the week, and I'm running a marathon in April." desktop={{ x: 26, y: 92, rotate: 4 }}>
+      <Sticker id="gym" bubble="I train most days. Gym through the week, and I'm running a marathon in April." desktop={{ x: 26, y: 92, rotate: 4 }} mobile={{ x: 127, y: 78, rotate: -4 }}>
         <Emoji>🏋️</Emoji>
       </Sticker>
-      <Sticker id="agents" bubble="I spend my days teaching AI agents to do my job, then even more time reviewing their work." desktop={{ x: 94, y: 88, rotate: -6 }}>
+      <Sticker id="agents" bubble="I spend my days teaching AI agents to do my job, then even more time reviewing their work." desktop={{ x: 94, y: 88, rotate: -6 }} mobile={{ x: 120, y: 64, rotate: 6 }}>
         <Emoji>🤖</Emoji>
       </Sticker>
 

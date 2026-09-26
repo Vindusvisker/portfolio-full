@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://mruud.com"),
   title: "Marcus Ruud",
   description:
-    "Yo, I'm Marcus. I build products with code. Platforms, AI tools, automation.",
+    "Hey, I'm Marcus! I build products with code. Platforms, AI tools, automation.",
   openGraph: {
     title: "Marcus Ruud",
     description:

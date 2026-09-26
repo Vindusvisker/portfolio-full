@@ -7,10 +7,34 @@ import { useEffect, useReducer, useRef, useState } from "react";
  * `data-section-title`, and as each one scrolls past the top third of the
  * viewport the headline erases and retypes itself, glyph by glyph.
  */
-export function SectionTitle({ initial, className = "" }: { initial: string; className?: string }) {
+export function SectionTitle({
+  initial,
+  className = "",
+  tuckOnPhones = false,
+}: {
+  initial: string;
+  className?: string;
+  /** On phones, fade the headline out once the page scrolls; used where the top is busy. */
+  tuckOnPhones?: boolean;
+}) {
   const [target, setTarget] = useState(initial);
+  // Some pages only have room for the headline at the very top on phones: it fades once the page moves.
+  const [tucked, setTucked] = useState(false);
   const anim = useRef({ shown: initial, count: initial.length });
   const [, rerender] = useReducer((n: number) => n + 1, 0);
+
+  useEffect(() => {
+    if (!tuckOnPhones) return;
+    const phone = window.matchMedia("(max-width: 767px)");
+    const update = () => setTucked(phone.matches && window.scrollY > 48);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    phone.addEventListener("change", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      phone.removeEventListener("change", update);
+    };
+  }, [tuckOnPhones]);
 
   // Pick the active section from scroll position.
   useEffect(() => {
@@ -86,7 +110,7 @@ export function SectionTitle({ initial, className = "" }: { initial: string; cla
 
   return (
     <h1
-      className={`pointer-events-none fixed left-5 top-[72px] z-30 max-w-[min(26em,calc(100vw-2.5rem))] font-display text-xl font-semibold uppercase leading-none tracking-wide text-white mix-blend-difference md:left-8 md:top-4 md:flex md:min-h-[44px] md:max-w-[min(30em,calc(100vw-24rem))] md:items-center md:text-[26px] ${className}`}
+      className={`pointer-events-none fixed left-5 top-[72px] z-30 transition-opacity duration-300 ${tucked ? "opacity-0" : "opacity-100"} max-w-[min(26em,calc(100vw-2.5rem))] font-display text-xl font-semibold uppercase leading-none tracking-wide text-white mix-blend-difference md:left-8 md:top-4 md:flex md:min-h-[44px] md:max-w-[min(30em,calc(100vw-24rem))] md:items-center md:text-[26px] ${className}`}
       aria-live="polite"
     >
       <span className="sr-only">{target}</span>

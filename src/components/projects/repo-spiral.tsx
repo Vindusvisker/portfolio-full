@@ -122,7 +122,7 @@ export function RepoSpiral({ active, dormant }: { active: RepoRow[]; dormant: Re
 
   return (
     <div ref={wrapRef} style={{ height: `calc(100svh + ${n * VH_PER_CARD}vh)` }}>
-      <div className="sticky top-[50px] flex h-[calc(100svh-50px)] flex-col items-center overflow-hidden pt-28 md:pt-12">
+      <div className="sticky top-[50px] flex h-[calc(100svh-50px)] flex-col items-center overflow-hidden pt-16 md:pt-12">
         <div className="relative z-10 w-full max-w-[800px] px-4">
           <h3 className="font-mono text-xs font-bold uppercase tracking-widest">Above ground</h3>
           <p className="mt-1 font-mono text-xs text-muted-foreground">Pushed in the last year. Scroll to turn the helix.</p>

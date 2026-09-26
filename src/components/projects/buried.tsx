@@ -1,7 +1,7 @@
 "use client";
 
 import { useMotionValueEvent, useScroll } from "motion/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Shredder from "./shredder";
 import type { RepoRow } from "@/lib/repo-groups";
 
@@ -12,7 +12,7 @@ const WIDTH = 960;
 const INSET = 14;
 const STRIP = 11;
 /** Navbar, top padding and heading block. Phones wrap the heading, so they reserve more. */
-const chrome = () => (window.innerWidth >= 768 ? 200 : 270);
+const chrome = () => (window.innerWidth >= 768 ? 200 : 215);
 
 /**
  * The buried repos in a shredder that is pinned while you scroll past it.
@@ -44,7 +44,8 @@ export function Buried({ rows }: { rows: RepoRow[] }) {
   // the pinned frame, and widen it before scaling so the result still fills
   // narrow screens. The shredder reads its own scale, so hit testing holds.
   const [fit, setFit] = useState({ scale: 1, width: WIDTH });
-  useEffect(() => {
+  // Before paint, so the full-width first frame never gets to widen a phone's layout viewport.
+  useLayoutEffect(() => {
     const measure = () => {
       const scale = Math.min(
         1,
@@ -64,7 +65,7 @@ export function Buried({ rows }: { rows: RepoRow[] }) {
 
   return (
     <div ref={ref} style={{ height: `calc(100svh + ${n * 22}vh)` }}>
-      <div className="sticky top-[50px] flex h-[calc(100svh-50px)] flex-col items-center justify-center overflow-visible px-2 pt-24 md:pt-16">
+      <div className="sticky top-[50px] flex h-[calc(100svh-50px)] flex-col items-center justify-center overflow-visible px-2 pt-16">
         <div className="mb-4 w-full max-w-[960px] px-4">
           <h3 className="font-mono text-xs font-bold uppercase tracking-widest">
             Buried
@@ -91,6 +92,7 @@ export function Buried({ rows }: { rows: RepoRow[] }) {
           </p>
         </div>
         <div
+          className="max-w-full overflow-x-clip"
           style={{ width: fit.width * fit.scale, height: height * fit.scale }}
         >
           <div

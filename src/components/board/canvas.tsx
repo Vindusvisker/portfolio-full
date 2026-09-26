@@ -4,6 +4,7 @@ import { animate, motion, useMotionTemplate, useMotionValue, useMotionValueEvent
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { SHAKE_EVENT } from "./konami";
+import { ROUTE_REVEAL_EVENT, routeCovered } from "@/components/route-transition";
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 2.5;
@@ -19,6 +20,19 @@ export const WORLD = { w: 1440, h: 900 };
 const FIT = 0.75;
 /** Portrait stages are limited by width, so the sheet may use nearly all of it. */
 const FIT_PORTRAIT = 0.94;
+/** Phones: the world is the stage itself, shown a little zoomed out so it breathes. */
+const PHONE_SCALE = 0.86;
+/**
+ * Arrival: the board opens pulled back to `from` times the home zoom, so the
+ * whole thing is in view, holds for `hold` seconds, then pushes in to the
+ * home view over `seconds`. Phones get a slower, further move: there's a
+ * ring of stickers out there worth a look.
+ */
+const ARRIVE = {
+  phone: { from: 0.5, hold: 0.9, seconds: 2.6 },
+  desktop: { from: 0.55, hold: 0.2, seconds: 1.6 },
+};
+const ARRIVE_EASE = [0.2, 0.8, 0.2, 1] as const;
 
 const trim = (n: number) => (Math.round(n * 100) / 100).toString();
 
@@ -37,7 +51,7 @@ interface CanvasProps {
  * A pannable, zoomable stage. Children are laid out in a "world" the size of
  * the stage itself, so percent positions keep working. Drag the background
  * to pan, pinch or ctrl/cmd + wheel to zoom. A plain wheel still scrolls the
- * page, and a single finger on touch still scrolls too.
+ * page. One finger on touch pans as well: the home page has nothing to scroll.
  */
 export function Canvas({ children }: CanvasProps) {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -116,6 +130,34 @@ export function Canvas({ children }: CanvasProps) {
     animate(s, home.current.s, opts);
   };
 
+  /** Jump to the pulled-back view, then push in to home. */
+  const arriveSettings = () => (window.matchMedia(LARGE_SCREEN).matches ? ARRIVE.desktop : ARRIVE.phone);
+
+  /** Jump to the pulled-back view without animating. */
+  const pullBack = () => {
+    const el = stageRef.current;
+    if (!el) return;
+    const h = home.current;
+    const far = h.s * arriveSettings().from;
+    // Zoom about the middle of the stage so the push-in stays centered.
+    const px = el.clientWidth / 2;
+    const py = el.clientHeight / 2;
+    x.set(px - ((px - h.x) / h.s) * far);
+    y.set(py - ((py - h.y) / h.s) * far);
+    s.set(far);
+  };
+
+  /** From the pulled-back view, hold a beat, then push in to home. */
+  const arrive = () => {
+    pullBack();
+    const h = home.current;
+    const { hold, seconds } = arriveSettings();
+    const opts = { duration: seconds, delay: hold, ease: ARRIVE_EASE };
+    animate(x, h.x, opts);
+    animate(y, h.y, opts);
+    animate(s, h.s, opts);
+  };
+
   // Pick the home view for this screen size and settle into it on load.
   // Re-fit (without animating) whenever the stage changes size.
   useEffect(() => {
@@ -135,12 +177,26 @@ export function Canvas({ children }: CanvasProps) {
         const y = Math.min((vh - WORLD.h * hs) / 2, vh * 0.12);
         home.current = { x: (vw - WORLD.w * hs) / 2, y, s: hs };
       } else {
-        home.current = { x: 0, y: 0, s: 1 };
+        const hs = PHONE_SCALE;
+        home.current = { x: (vw - vw * hs) / 2, y: (vh - vh * hs) / 2, s: hs };
       }
       if (settle) reset(0.6);
       else reset(0);
     };
-    apply(true);
+    apply(false);
+    // Open pulled back and push in. Under a route sheet, wait for it to lift.
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let onReveal: (() => void) | null = null;
+    if (!reduce) {
+      if (routeCovered()) {
+        onReveal = () => arrive();
+        window.addEventListener(ROUTE_REVEAL_EVENT, onReveal, { once: true });
+        // Hold the far view meanwhile, so the lift reveals the whole board.
+        pullBack();
+      } else {
+        arrive();
+      }
+    }
     const onChange = () => apply(true);
     mq.addEventListener("change", onChange);
     let first = true;
@@ -155,6 +211,7 @@ export function Canvas({ children }: CanvasProps) {
     ro.observe(el);
     return () => {
       mq.removeEventListener("change", onChange);
+      if (onReveal) window.removeEventListener(ROUTE_REVEAL_EVENT, onReveal);
       ro.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -192,15 +249,13 @@ export function Canvas({ children }: CanvasProps) {
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     e.currentTarget.setPointerCapture(e.pointerId);
     last.current = gestureFromPointers();
-    if (e.pointerType !== "touch" || pointers.current.size >= 2) setPanning(true);
+    setPanning(true);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!pointers.current.has(e.pointerId) || !last.current) return;
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     const count = pointers.current.size;
-    // One finger on touch is left to the browser for page scrolling.
-    if (e.pointerType === "touch" && count < 2) return;
 
     const now = gestureFromPointers();
     const rect = e.currentTarget.getBoundingClientRect();
@@ -243,7 +298,7 @@ export function Canvas({ children }: CanvasProps) {
           if (t === e.currentTarget || t.hasAttribute("data-world")) window.dispatchEvent(new CustomEvent(SHAKE_EVENT));
         }}
         className={`absolute inset-0 select-none overflow-hidden ${panning ? "cursor-grabbing" : "cursor-grab"}`}
-        style={{ touchAction: "pan-y" }}
+        style={{ touchAction: "none" }}
       >
         <div aria-hidden="true" className="board-glow pointer-events-none absolute inset-0" />
         <div aria-hidden="true" className="board-grid pointer-events-none absolute inset-0" />
@@ -288,8 +343,9 @@ export function Canvas({ children }: CanvasProps) {
         </div>
       </div>
 
-      {/* Phones: the title block is hidden, so the controls stand alone up top */}
-      <div className="absolute right-3 top-14 z-30 flex items-center gap-1.5 md:hidden" onPointerDown={(e) => e.stopPropagation()}>
+      {/* Phones: the title block is hidden, so the controls stand alone bottom-right */}
+      <div className="absolute bottom-4 right-3 z-30 flex items-center gap-1.5 md:hidden" onPointerDown={(e) => e.stopPropagation()}>
+        <span className="mr-1.5 font-mono text-[10px] uppercase tracking-wider text-white/50">zoom out, there&apos;s more</span>
         <button type="button" onClick={() => zoomFromCenter(1 / 1.3)} aria-label="Zoom out" className={buttonClass}>
           <Minus size={14} />
         </button>

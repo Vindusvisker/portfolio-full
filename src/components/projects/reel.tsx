@@ -305,7 +305,7 @@ export function Reel({ items }: { items: [ReelItem, ReelItem, ReelItem] }) {
             <li key={it.src}>{it.alt}</li>
           ))}
         </ul>
-        <p className="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-xs text-muted-foreground">↓ scroll</p>
+        <p className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 font-mono text-xs text-muted-foreground md:block">↓ scroll</p>
       </div>
     </div>
   );

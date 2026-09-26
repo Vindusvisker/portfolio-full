@@ -10,7 +10,12 @@ export function Dock() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > window.innerHeight * 0.8);
+    // Shown once the opener has scrolled away, hidden again near the end so it never covers the footer.
+    const onScroll = () => {
+      const y = window.scrollY;
+      const nearEnd = y + window.innerHeight > document.documentElement.scrollHeight - 160;
+      setShow(y > window.innerHeight * 0.8 && !nearEnd);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

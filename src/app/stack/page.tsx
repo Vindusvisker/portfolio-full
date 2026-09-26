@@ -134,9 +134,9 @@ const globeItems = stack.flatMap((section) =>
 export default function StackPage() {
   return (
     <>
-      <SectionTitle initial={HERO_TITLE} />
+      <SectionTitle initial={HERO_TITLE} tuckOnPhones />
       {/* The globe owns the first screen; the headline sits in the header like on the projects page */}
-      <section data-section-title={HERO_TITLE} className="h-svh min-h-[600px] w-full pt-28 md:pt-24">
+      <section data-section-title={HERO_TITLE} className="h-svh min-h-[600px] w-full px-5 pt-28 md:px-0 md:pt-24">
         <StackGlobe items={globeItems} />
       </section>
       <section id="stack-list" className="mx-auto max-w-3xl px-6 py-8 scroll-mt-24">

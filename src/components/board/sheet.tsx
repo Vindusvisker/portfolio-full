@@ -28,7 +28,7 @@ export function Sheet() {
       <div className="panel-paper relative rounded-[3px] bg-[#f2ede4] px-5 pb-4 pt-6 text-[#1a1713] md:px-9 md:pb-7 md:pt-9">
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#1a1713]/50">Note 01 · Hello</p>
         <h1 className="mt-1.5 font-display text-[34px] font-bold uppercase leading-[0.95] tracking-tight md:text-[54px]">
-          Yo, I&apos;m Marcus.
+          Hey, I&apos;m Marcus!
         </h1>
         <FoldText className="mt-2.5 font-sans text-[14px] leading-relaxed text-[#1a1713]/90 md:mt-4 md:text-[17px]">
           I build products with code. Platforms, AI tools, automation. Anything, as long as it solves the problem.

@@ -104,7 +104,12 @@ export default async function ProjectsPage() {
         />
       </div>
 
-      <section data-section-title={titles.work} data-switch-look="plain" className="relative px-5 pb-24 pt-[30svh] md:px-8 md:pb-[24vh]">
+      <section
+        data-section-title={titles.work}
+        data-switch-look="plain"
+        // On phones the flattened reel leaves half a screen of empty canvas under it, so this tucks up into that space.
+        className="relative -mt-[28svh] px-5 pb-24 pt-10 md:mt-0 md:px-8 md:pb-[24vh] md:pt-[30svh]"
+      >
         <Wash colors={work.map((w) => w.plate)} />
         <div className="relative z-10">
         <div className="mb-16 grid gap-6 md:mb-20 md:grid-cols-2">
