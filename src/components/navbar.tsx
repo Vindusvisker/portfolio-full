@@ -2,112 +2,69 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText } from "lucide-react";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
 import { Logo } from "./logo";
 
-const navLinks = [
-  { href: "/", label: "Home" },
+const links = [
   { href: "/projects", label: "Projects" },
   { href: "/stack", label: "Stack" },
+  { href: "/resume.pdf", label: "CV", external: true },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  // The projects page puts its own headline top-left, so the brand moves right.
+  const brandRight = pathname === "/projects";
+
+  const brand = (
+    <Link
+      href="/"
+      className="pointer-events-auto flex min-h-[44px] items-center gap-2 text-foreground transition-opacity hover:opacity-70"
+    >
+      <Logo size={22} />
+      <span className={`font-bold ${brandRight ? "hidden sm:inline" : ""}`}>Marcus Ruud</span>
+    </Link>
+  );
 
   return (
-    <header className="sticky top-0 z-40 w-full">
-      {/* Logo blob + nav + socials blob */}
-      <nav aria-label="Main navigation" className="pointer-events-none relative flex items-start justify-between">
-        {/* Left: Logo blob + pill */}
-        <div className="pointer-events-auto flex items-start">
-          {/* Logo with curved background blob */}
-          <div className="relative z-10 flex items-center rounded-br-[2.5rem] bg-sidebar px-6 py-4 pr-10">
-            <Link
-              href="/"
-              className="flex min-h-[44px] items-center transition-transform duration-200 hover:-translate-y-0.5 cursor-pointer"
-            >
-              <Logo size={32} />
-            </Link>
-            {/* Concave curve connecting blob to top strip */}
-            <div className="navbar-concave-curve" />
-            {/* Concave curve connecting blob to left strip */}
-            <div className="navbar-concave-curve-bottom" />
-          </div>
-
-          {/* Desktop nav - frosted pill */}
-          <div className="mt-2 ml-2 hidden items-center rounded-2xl border border-border/50 bg-sidebar px-2 py-1 md:flex">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex min-h-[44px] items-center rounded-full px-3 text-sm transition-colors duration-150 cursor-pointer ${
-                  pathname === link.href
-                    ? "text-foreground font-medium"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-[44px] items-center gap-2 rounded-full px-3 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
-              aria-label="Download CV"
-            >
-              <FileText size={16} />
-              <span>CV</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Mobile toggle */}
-        <div className="pointer-events-auto mt-2 flex items-center gap-2 px-6 md:hidden">
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-border/50 bg-background/60 backdrop-blur-xl transition-colors hover:bg-background cursor-pointer active:scale-[0.98]"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-        </div>
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-40">
+      <nav
+        aria-label="Main navigation"
+        className={`flex items-center px-5 py-4 font-mono text-sm md:px-8 ${
+          brandRight ? "justify-end gap-6 md:gap-8" : "justify-between"
+        }`}
+      >
+        {!brandRight && brand}
+        <ul className="pointer-events-auto flex items-center gap-4 md:gap-6">
+          {links.map((link) =>
+            link.external ? (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex min-h-[44px] items-center text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ) : (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className={`flex min-h-[44px] items-center transition-colors hover:text-foreground ${
+                    pathname === link.href
+                      ? "text-foreground underline underline-offset-4"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            )
+          )}
+        </ul>
+        {brandRight && brand}
       </nav>
-
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="absolute left-6 right-6 mt-2 rounded-2xl border border-border/50 bg-background/80 px-6 py-4 backdrop-blur-xl md:hidden shadow-lg">
-          <div className="flex flex-col gap-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`flex min-h-[44px] items-center text-sm transition-colors cursor-pointer ${
-                  pathname === link.href
-                    ? "text-foreground font-medium"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-[44px] items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
-            >
-              <FileText size={18} />
-              <span>CV</span>
-            </a>
-          </div>
-        </div>
-      )}
     </header>
   );
 }

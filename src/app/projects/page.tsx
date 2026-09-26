@@ -1,172 +1,168 @@
 import { getPublicRepos, getTotalContributions } from "@/lib/github";
-import Link from "next/link";
-import { ProjectCard } from "@/components/project-card";
-import { Boxes } from "@/components/ui/background-boxes";
-import { BlurFade } from "@/components/ui/blur-fade";
+import { Dock } from "@/components/projects/dock";
+import { Graveyard } from "@/components/projects/graveyard";
+import { PaperMode } from "@/components/projects/paper-mode";
+import { graveyardPrint } from "@/lib/graveyard-print";
+import { Reel } from "@/components/projects/reel";
+import { RepoField } from "@/components/projects/repo-field";
+import { SectionTitle } from "@/components/projects/section-title";
+import { Wash } from "@/components/projects/wash";
+import { WorkGrid, type WorkItem } from "@/components/projects/work-grid";
 import type { Metadata } from "next";
-import type { GitHubRepo } from "@/lib/github";
 
 export const metadata: Metadata = {
   title: "Projects - Marcus Ruud",
-  description:
-    "Open source projects and repositories by Marcus Ruud.",
+  description: "Products Marcus Ruud has shipped, and the open source behind them.",
 };
 
 export const revalidate = 300;
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const work: (WorkItem & { wash: { sm: string; lg: string } })[] = [
+  {
+    name: "trale.ai",
+    status: "Production",
+    note: "AI meeting intelligence platform at Supercompany. Records, transcribes and summarizes meetings, then handles prep and follow-up. Thousands of users.",
+    href: "https://trale.ai",
+    image: "/projects/trale.jpg",
+    wash: { sm: "/projects/wash/trale.jpg", lg: "/projects/wash/trale-lg.jpg" },
+    place: "md:col-span-8",
+  },
+  {
+    name: "lerret.app",
+    status: "Production",
+    note: "Browser based editor for screenshots and device mockups. 35 devices, annotations, and image or 60 fps video export, all rendered in the browser.",
+    href: "https://lerret.app",
+    image: "/projects/lerret.jpg",
+    wash: { sm: "/projects/wash/lerret.jpg", lg: "/projects/wash/lerret-lg.jpg" },
+    aspect: "aspect-video",
+    place: "md:col-span-8 md:col-start-5 md:mt-[25vh] lg:mt-[40vh]",
+  },
+  {
+    name: "personaforge.me",
+    status: "Sold",
+    note: "Persona and profile card editor. Templates, a visual editor, and export to PNG, JPG, WebP, HTML/CSS or JSX. Built, launched, and sold on.",
+    href: "",
+    image: "/projects/personaforge-poster.jpg",
+    wash: { sm: "/projects/wash/personaforge-poster.jpg", lg: "/projects/wash/personaforge-poster-lg.jpg" },
+    video: "/projects/personaforge.mp4",
+    place: "md:col-span-7 md:col-start-2 lg:mt-[12vh]",
+  },
+];
 
-function groupByYearMonth(repos: GitHubRepo[]) {
-  const sorted = [...repos].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
+const lately = [
+  { label: "trale.ai", status: "Production", href: "https://trale.ai" },
+  { label: "lerret.app", status: "Production, for sale", href: "https://lerret.app" },
+  { label: "personaforge.me", status: "Sold", href: "" },
+];
 
-  const groups: { label: string; repos: GitHubRepo[] }[] = [];
-  let currentLabel = "";
-
-  for (const repo of sorted) {
-    const date = new Date(repo.created_at);
-    const label = `${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
-    if (label !== currentLabel) {
-      groups.push({ label, repos: [] });
-      currentLabel = label;
-    }
-    groups[groups.length - 1].repos.push(repo);
-  }
-
-  return groups;
-}
+const contact = [
+  { label: "marcruud@gmail.com", href: "mailto:marcruud@gmail.com" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/marcus-ruud-25936a260/" },
+  { label: "GitHub", href: "https://github.com/vindusvisker" },
+];
 
 export default async function ProjectsPage() {
-  const [repos, totalContributions] = await Promise.all([
-    getPublicRepos(),
-    getTotalContributions(),
-  ]);
-  const groups = groupByYearMonth(repos);
+  const [repos, totalContributions] = await Promise.all([getPublicRepos(), getTotalContributions()]);
+  const sorted = [...repos].sort((a, b) => (b.commits ?? 0) - (a.commits ?? 0));
+
+  const titles = {
+    hero: "Projects. Things I've shipped.",
+    work: "Two products in production. One built and sold.",
+    repos: `Open source. ${repos.length} repos in the graveyard.`,
+    contact: "Let's build something.",
+  };
 
   return (
     <>
-    <div className="relative -mt-32 h-[40dvh] overflow-hidden bg-background">
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-72 bg-gradient-to-t from-background to-transparent" />
-      <Boxes className="opacity-20" />
-      <section className="pointer-events-none relative z-10 mx-auto flex h-full max-w-3xl flex-col justify-end px-6 pb-8 pt-32">
-        <div className="pointer-events-auto">
-          <BlurFade delay={0.05} inView>
-          <h1 className="text-2xl font-extrabold tracking-tight">Projects</h1>
-          </BlurFade>
-          <BlurFade delay={0.1} inView>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Open source work and experiments. All available on{" "}
-            <a
-              href="https://github.com/vindusvisker"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary underline underline-offset-4 transition-colors hover:text-primary/80 cursor-pointer"
-            >
-              GitHub
-            </a>
-            .
-          </p>
-          </BlurFade>
-          <BlurFade delay={0.15} inView>
-          <div className="mt-4 flex gap-6 text-sm">
-            <span className="text-foreground font-medium">{repos.length} <span className="text-muted-foreground font-normal">repos</span></span>
-            <span className="text-foreground font-medium">{totalContributions.toLocaleString()} <span className="text-muted-foreground font-normal">contributions</span></span>
-            <Link href="/stack" className="text-primary underline underline-offset-4 transition-colors hover:text-primary/80 cursor-pointer font-medium">My stack</Link>
+      <SectionTitle initial={titles.hero} />
+      <Dock />
+      <PaperMode targetId="graveyard" />
+
+      <div data-section-title={titles.hero}>
+        <Reel
+          items={[
+            { src: "/projects/trale.jpg", alt: "trale.ai landing page" },
+            { src: "/projects/lerret.jpg", alt: "The lerret.app editor with a screenshot framed in a browser window" },
+            { src: "/projects/personaforge.jpg", alt: "PersonaForge landing page with a fan of persona cards" },
+          ]}
+        />
+      </div>
+
+      <section data-section-title={titles.work} className="relative px-5 pb-48 pt-[30svh] md:px-8 md:pb-[50vh]">
+        <Wash srcs={work.map((w) => w.wash)} />
+        <div className="relative z-10">
+        <div className="mb-32 grid gap-6 md:mb-44 md:grid-cols-2">
+          <div className="font-mono text-base font-bold leading-snug md:text-lg">
+            <h2 className="mb-2 font-medium text-muted-foreground">Lately</h2>
+            <ul>
+              {lately.map((it) => (
+                <li key={it.label}>
+                  {it.href ? (
+                    <a
+                      href={it.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-opacity hover:opacity-60"
+                    >
+                      {it.label} <span className="font-medium text-muted-foreground">({it.status})</span> →
+                    </a>
+                  ) : (
+                    <span>
+                      {it.label} <span className="font-medium text-muted-foreground">({it.status})</span>
+                    </span>
+                  )}
+                </li>
+              ))}
+              <li>
+                <a
+                  href="https://github.com/vindusvisker"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-opacity hover:opacity-60"
+                >
+                  {repos.length} public repos{" "}
+                  <span className="font-medium text-muted-foreground">
+                    ({totalContributions.toLocaleString("en-US")} contributions)
+                  </span>{" "}
+                  →
+                </a>
+              </li>
+            </ul>
           </div>
-          </BlurFade>
+        </div>
+        <WorkGrid items={work} />
         </div>
       </section>
-    </div>
-    <section className="mx-auto max-w-3xl px-6 py-8">
-      <div>
-        <BlurFade delay={0.05} inView>
-          <h2 className="mb-4 text-xs font-medium text-muted-foreground">Currently building</h2>
-        </BlurFade>
-        <div className="space-y-3">
-          {[
-            {
-              name: "trale.ai",
-              description: "AI powered sales platform that automates the entire meeting lifecycle, from prep to follow up. Thousands of users.",
-              href: "https://trale.ai",
-              status: "Production" as const,
-            },
-            {
-              name: "assembo.app",
-              description: "Collaborative design tool for teams to build and ship faster.",
-              href: "https://assembo.app",
-              status: "In progress" as const,
-            },
-            {
-              name: "relate.run",
-              description: "Full stack relationship management platform.",
-              href: "https://relate.run",
-              status: "In progress" as const,
-            },
-          ].map((project, i) => (
-            <BlurFade key={project.name} delay={0.08 + i * 0.03} inView>
+
+      <section id="graveyard" data-section-title={titles.repos} className="paper-sheet relative pb-32 pt-[20svh]">
+        <div className="paper-grain pointer-events-none absolute inset-0 opacity-30 mix-blend-multiply" aria-hidden="true" />
+        <div className="relative mx-auto max-w-6xl px-5 md:px-8">
+          <Graveyard src={graveyardPrint(sorted, totalContributions)} />
+          <div className="mt-24 md:mt-32">
+            <RepoField repos={sorted} />
+          </div>
+        </div>
+      </section>
+
+      <section
+        data-section-title={titles.contact}
+        className="mx-auto flex min-h-[70svh] max-w-6xl items-end px-5 pb-16 md:px-8"
+      >
+        <ul className="space-y-2 font-mono text-xl font-bold md:text-2xl">
+          {contact.map((it) => (
+            <li key={it.href}>
               <a
-                href={project.href || "#"}
-                target={project.href ? "_blank" : undefined}
-                rel={project.href ? "noopener noreferrer" : undefined}
-                className="group flex items-center gap-4 rounded-lg border border-border/50 px-4 py-3 transition-colors hover:border-primary/30 cursor-pointer"
+                href={it.href}
+                target={it.href.startsWith("mailto") ? undefined : "_blank"}
+                rel="noopener noreferrer"
+                className="underline decoration-border underline-offset-8 transition-colors hover:decoration-foreground"
               >
-                <span className="shrink-0 text-sm font-medium group-hover:text-primary transition-colors">{project.name}</span>
-                <span className="h-px flex-1 bg-border/50" />
-                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                  project.status === "Production"
-                    ? "bg-green-500/10 text-green-400"
-                    : "bg-orange-500/10 text-orange-400"
-                }`}>{project.status}</span>
+                {it.label}
               </a>
-            </BlurFade>
+            </li>
           ))}
-        </div>
-      </div>
-
-      <div className="mt-10">
-        <BlurFade delay={0.05} inView>
-          <h2 className="mb-4 text-xs font-medium text-muted-foreground">Freelance</h2>
-        </BlurFade>
-        <div className="space-y-3">
-          <BlurFade delay={0.08} inView>
-            <a
-              href="https://sendpilot.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-4 rounded-lg border border-border/50 px-4 py-3 transition-colors hover:border-primary/30 cursor-pointer"
-            >
-              <span className="shrink-0 text-sm font-medium group-hover:text-primary transition-colors">sendpilot.ai</span>
-              <span className="h-px flex-1 bg-border/50" />
-              <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground">Summer 2024</span>
-            </a>
-          </BlurFade>
-        </div>
-      </div>
-
-      <div className="mt-10 space-y-8">
-        <BlurFade delay={0.05} inView>
-          <h2 className="text-xs font-medium text-muted-foreground">Open source</h2>
-        </BlurFade>
-        {groups.map((group, gi) => (
-          <BlurFade key={group.label} delay={0.05 + gi * 0.03} inView>
-            <div>
-              <h2 className="mb-3 text-xs font-medium text-muted-foreground">{group.label}</h2>
-              <div className="space-y-2">
-                {group.repos.map((repo) => (
-                  <ProjectCard key={repo.name} repo={repo} />
-                ))}
-              </div>
-            </div>
-          </BlurFade>
-        ))}
-        {repos.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            Unable to load repositories. Check back later.
-          </p>
-        )}
-      </div>
-    </section>
+        </ul>
+      </section>
     </>
   );
 }

@@ -1,4 +1,3 @@
-import { Boxes } from "@/components/ui/background-boxes";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { StackSection } from "@/components/stack-section";
 import type { Metadata } from "next";
@@ -90,7 +89,7 @@ const stack = [
   },
   {
     category: "Data Science",
-    description: "Bachelor's in Data Science from Noroff. Python, Jupyter, pandas, scikit-learn, the full academic stack. I love applying statistical thinking to the products I build. Signal scoring in Relate, retention analysis at Trale, not just academic exercises.",
+    description: "Bachelor's in Data Science from Noroff. Python, Jupyter, pandas, scikit-learn, the full academic stack. I love applying statistical thinking to the products I build. Retention analysis at Trale, not just academic exercises.",
     items: [
       { name: "Python", note: "Primary DS language" },
       { name: "Jupyter", note: "Analysis and experiments" },
@@ -128,22 +127,16 @@ const stack = [
 export default function StackPage() {
   return (
     <>
-      <div className="relative -mt-32 h-[40dvh] overflow-hidden bg-background">
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-72 bg-gradient-to-t from-background to-transparent" />
-        <Boxes className="opacity-20" />
-        <section className="pointer-events-none relative z-10 mx-auto flex h-full max-w-3xl flex-col justify-end px-6 pb-8 pt-32">
-          <div className="pointer-events-auto">
-            <BlurFade delay={0.05} inView>
-              <h1 className="text-2xl font-extrabold tracking-tight">Stack</h1>
-            </BlurFade>
-            <BlurFade delay={0.1} inView>
-              <p className="mt-2 text-sm text-muted-foreground">
-                The tools and technologies I use to build products.
-              </p>
-            </BlurFade>
-          </div>
-        </section>
-      </div>
+      <section className="mx-auto max-w-3xl px-6 pb-4 pt-32">
+        <BlurFade delay={0.05} inView>
+          <h1 className="font-mono text-2xl font-bold tracking-tight">Stack</h1>
+        </BlurFade>
+        <BlurFade delay={0.1} inView>
+          <p className="mt-2 text-sm text-muted-foreground">
+            The tools and technologies I use to build products.
+          </p>
+        </BlurFade>
+      </section>
       <section className="mx-auto max-w-3xl px-6 py-8">
         <div className="space-y-16">
           {stack.map((section, i) => (

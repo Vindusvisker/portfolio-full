@@ -2,58 +2,26 @@
 @import "tw-animate-css";
 
 :root {
-  --background: #141414;
-  --foreground: #ece8df;
-  --card: #1f1f1f;
-  --card-foreground: #ece8df;
-  --popover: #1f1f1f;
+  --background: #050505;
+  --foreground: #f2efe8;
+  --card: #000000;
+  --card-foreground: #f2efe8;
+  --popover: #0f0f0f;
   --popover-foreground: #f6f4f0;
-  --primary: #ece8df;
-  --primary-foreground: #141414;
-  --secondary: #1f1f1f;
-  --secondary-foreground: #ece8df;
-  --muted: #1f1f1f;
-  --muted-foreground: #999;
-  --accent: #1f1f1f;
-  --accent-foreground: #ece8df;
+  --primary: #f2efe8;
+  --primary-foreground: #050505;
+  --secondary: #141414;
+  --secondary-foreground: #f2efe8;
+  --muted: #141414;
+  --muted-foreground: #8f8f8f;
+  --accent: #141414;
+  --accent-foreground: #f2efe8;
   --destructive: #e06c75;
-  --destructive-foreground: #141414;
-  --border: #2a2a2a;
-  --input: #1f1f1f;
-  --ring: #ece8df;
-  --chart-1: #ece8df;
-  --chart-2: #999;
-  --chart-3: #cfcfcf;
-  --chart-4: #ddd;
-  --chart-5: #1f1f1f;
-  --sidebar: #111;
-  --sidebar-foreground: #ece8df;
-  --sidebar-primary: #ece8df;
-  --sidebar-primary-foreground: #141414;
-  --sidebar-accent: #1f1f1f;
-  --sidebar-accent-foreground: #ece8df;
-  --sidebar-border: #1f1f1f;
-  --sidebar-ring: #ece8df;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --radius: 0.5rem;
-  --shadow-x: 0;
-  --shadow-y: 1px;
-  --shadow-blur: 3px;
-  --shadow-spread: 0px;
-  --shadow-opacity: 0.1;
-  --shadow-color: oklch(0 0 0);
-  --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
-  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
-  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
-  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
-  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-  --tracking-normal: 0em;
-  --spacing: 0.25rem;
+  --destructive-foreground: #050505;
+  --border: #262626;
+  --input: #141414;
+  --ring: #f2efe8;
+  --radius: 0.75rem;
 }
 
 @theme inline {
@@ -76,37 +44,14 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
-  --font-serif: var(--font-serif);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-
-  --shadow-2xs: var(--shadow-2xs);
-  --shadow-xs: var(--shadow-xs);
-  --shadow-sm: var(--shadow-sm);
-  --shadow: var(--shadow);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
-  --shadow-2xl: var(--shadow-2xl);
 }
 
 @layer base {
@@ -118,86 +63,24 @@
   }
 }
 
-@keyframes slide-enter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Sticker board grid, like a sheet of graph paper */
+.board-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
-.slide-enter {
-  animation: slide-enter 0.5s ease-out both;
+/* White die-cut outline for stickers with transparent edges */
+.sticker-outline {
+  filter:
+    drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff)
+    drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)
+    drop-shadow(0 10px 18px rgba(0, 0, 0, 0.7));
 }
 
-.slide-enter-delay-1 { animation-delay: 100ms; }
-.slide-enter-delay-2 { animation-delay: 200ms; }
-.slide-enter-delay-3 { animation-delay: 300ms; }
-.slide-enter-delay-4 { animation-delay: 400ms; }
-.slide-enter-delay-5 { animation-delay: 500ms; }
-.slide-enter-delay-6 { animation-delay: 600ms; }
-
-@media (prefers-reduced-motion: reduce) {
-  .slide-enter {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Navbar concave curve - inverse rounded corner connecting blob to strip */
-.navbar-concave-curve {
-  position: absolute;
-  top: 0;
-  right: -1.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: radial-gradient(circle at 100% 100%, transparent 1.5rem, var(--sidebar) 1.5rem);
-}
-
-.navbar-concave-curve-bottom {
-  position: absolute;
-  bottom: -1.5rem;
-  left: 0;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: radial-gradient(circle at 100% 100%, transparent 1.5rem, var(--sidebar) 1.5rem);
-}
-
-.navbar-concave-curve-right {
-  position: absolute;
-  top: 0;
-  left: -1.5rem;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: radial-gradient(circle at 0% 100%, transparent 1.5rem, var(--background) 1.5rem);
-}
-
-.navbar-concave-curve-bottom-right {
-  position: absolute;
-  bottom: -1.5rem;
-  right: 0;
-  width: 1.5rem;
-  height: 1.5rem;
-  background: radial-gradient(circle at 0% 100%, transparent 1.5rem, var(--background) 1.5rem);
-}
-
-.footer-concave-left {
-  background: radial-gradient(circle at 100% 0%, transparent 2.5rem, var(--background) 2.5rem);
-}
-
-.footer-concave-right {
-  background: radial-gradient(circle at 0% 0%, transparent 2.5rem, var(--background) 2.5rem);
+.sticker-shadow {
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.7));
 }
 
 .skip-link {
@@ -218,29 +101,229 @@
   top: 0.5rem;
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--muted) 25%,
-    var(--background) 50%,
-    var(--muted) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
-  border-radius: calc(var(--radius) - 4px);
+/* Word-by-word fold-in for card text (see components/board/fold-text.tsx) */
+.fold-seg {
+  display: inline-block;
+  perspective: 700px;
+  transform-style: preserve-3d;
+}
+
+.fold-piece {
+  position: relative;
+  display: inline-block;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* Underlines don't propagate into inline-blocks, so restore them on link words */
+a .fold-piece {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.fold-piece::after {
+  content: "";
+  position: absolute;
+  inset: -0.08em -0.02em;
+  pointer-events: none;
+  opacity: var(--fold-crease, 0);
+  mix-blend-mode: multiply;
+  border-radius: 0.08em;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.22) 42%, rgba(255, 255, 255, 0.26) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton {
-    animation: none;
+  .fold-piece {
+    transform: none !important;
   }
+  .fold-piece::after {
+    opacity: 0 !important;
+  }
+}
+
+/* Ambient light on the board: a cool glow bottom-left */
+.board-glow {
+  background: radial-gradient(50% 45% at 8% 96%, rgba(90, 130, 255, 0.16), transparent 70%);
+}
+
+/* Sticker edge: holographic foil border, hairline keyline, gloss, tight shadow.
+   Elements set --sticker-bg so the fill stays opaque under the foil. */
+.sticker-edge {
+  position: relative;
+  isolation: isolate;
+  border: 3px solid transparent;
+  background:
+    linear-gradient(var(--sticker-bg, #fff), var(--sticker-bg, #fff)) padding-box,
+    conic-gradient(
+        from 210deg,
+        #f4f1ea 0%,
+        #c9d4ff 14%,
+        #f4f1ea 30%,
+        #ffd2e6 46%,
+        #f4f1ea 60%,
+        #c8f5e6 76%,
+        #ffe9c2 88%,
+        #f4f1ea 100%
+      )
+      border-box;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5),
+    0 10px 22px rgba(0, 0, 0, 0.7);
+}
+.sticker-edge-thin {
+  border-width: 2px;
+}
+.sticker-edge::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.08) 28%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.22) 100%
+  );
+}
+
+/* Card and bubble: slim double edge, no fat white line */
+.panel-edge {
+  border: 1px solid rgba(244, 241, 234, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.9),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 30px 60px -20px rgba(0, 0, 0, 0.9);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 30%);
+}
+
+
+
+/* Paper crumple (React Bits), used on the projects page */
+.paper-crumple {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+.paper-crumple-canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.paper-crumple-fallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--pc-image-width, 60%);
+  height: var(--pc-image-height, 72%);
+  user-select: none;
+  pointer-events: none;
+}
+.paper-crumple-hit {
+  appearance: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 2px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: grab;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.paper-crumple-hit[data-held='true'] {
+  cursor: grabbing;
+}
+.paper-crumple-hit:focus,
+.paper-crumple-hit:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.paper-crumple-focus {
+  position: absolute;
+  bottom: 24px;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+.paper-crumple-hit:not([data-pointer='true']):focus-visible + .paper-crumple-focus {
+  opacity: 0.55;
+}
+.paper-crumple-hit:disabled {
+  cursor: default;
+}
+.paper-crumple-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Paper mode: the projects page flips to this once the graveyard arrives */
+:root.paper {
+  --background: #f2ede4;
+  --foreground: #1a1713;
+  --card: #fbf9f4;
+  --card-foreground: #1a1713;
+  --popover: #fbf9f4;
+  --popover-foreground: #1a1713;
+  --primary: #1a1713;
+  --primary-foreground: #f2ede4;
+  --secondary: #e6e0d4;
+  --secondary-foreground: #1a1713;
+  --muted: #e6e0d4;
+  --muted-foreground: #6b6459;
+  --accent: #e6e0d4;
+  --accent-foreground: #1a1713;
+  --border: #d8d0c2;
+  --input: #e6e0d4;
+  --ring: #1a1713;
+}
+body {
+  transition: background-color 700ms ease, color 700ms ease;
+}
+
+/* Faint ruled grid, only visible once the page is cream */
+.paper-sheet {
+  background-image:
+    linear-gradient(to right, rgba(26, 23, 19, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(26, 23, 19, 0.07) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: center top;
+}
+.paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }

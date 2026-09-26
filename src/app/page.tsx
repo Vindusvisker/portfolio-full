@@ -1,13 +1,11 @@
-import { Hero } from "@/components/hero";
-import { Testimonials } from "@/components/testimonials";
-import { Activity } from "@/components/activity";
+import { Board } from "@/components/board/board";
+import { Lately } from "@/components/lately";
 
 export default function Home() {
   return (
     <>
-      <Hero />
-      <Testimonials />
-      <Activity />
+      <Board />
+      <Lately />
     </>
   );
 }
