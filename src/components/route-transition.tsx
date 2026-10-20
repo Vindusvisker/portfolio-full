@@ -10,7 +10,7 @@ interface Theme {
   /** Seconds the sheet holds before lifting */
   hold: number;
   /** What the sheet is made of, so the cover looks like the page it reveals. */
-  material: "blueprint" | "cream" | "dark";
+  material: "blueprint" | "cream" | "dark" | "sea";
   /** Which side of the Life | Work switch this page sits on. */
   side: "left" | "right";
 }
@@ -23,7 +23,7 @@ interface Theme {
  * board pushes in, the sphere grows, the star field drops out of warp.
  */
 const THEMES: Record<string, Theme> = {
-  "/": { bg: "#202022", hold: 0.12, material: "blueprint", side: "left" },
+  "/": { bg: "#071a1f", hold: 0.12, material: "sea", side: "left" },
   "/projects": { bg: "#f2ede4", hold: 0.12, material: "cream", side: "right" },
   "/stack": { bg: "#050505", hold: 0.12, material: "dark", side: "right" },
 };
@@ -152,6 +152,7 @@ export function RouteTransitionProvider({ children }: { children: React.ReactNod
             }}
           >
             {/* The sheet's material, the same layers the real page uses */}
+            {t.theme.material === "sea" && <div className="life-sheet absolute inset-0" />}
             {t.theme.material === "blueprint" && (
               <>
                 <div className="board-glow absolute inset-0" />

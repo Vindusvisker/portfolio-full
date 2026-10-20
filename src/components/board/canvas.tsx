@@ -3,12 +3,8 @@
 import { animate, motion, useMotionTemplate, useMotionValue, type MotionValue } from "motion/react";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import { SHAKE_EVENT } from "./konami";
 import { ROUTE_REVEAL_EVENT, routeCovered } from "@/components/route-transition";
-
-// The pixel field behind the board is WebGL, so it only loads in the browser.
-const PixelBlast = dynamic(() => import("./pixel-blast"), { ssr: false });
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 2.5;
@@ -297,27 +293,8 @@ export function Canvas({ children }: CanvasProps) {
         className={`absolute inset-0 select-none overflow-hidden ${panning ? "cursor-grabbing" : "cursor-grab"}`}
         style={{ touchAction: "none" }}
       >
-        {/* Dithered pixel field under everything. It reads the stage's pointer events, so it stays pointer-transparent. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          {/* No liquid pass and a 1x pixel ratio: one full-screen shader, no composer, the lanyard needs the GPU too. */}
-          <PixelBlast
-            variant="circle"
-            pixelSize={4}
-            color="#9a958b"
-            patternScale={2.5}
-            patternDensity={1.15}
-            pixelSizeJitter={0.4}
-            enableRipples
-            rippleSpeed={0.4}
-            rippleThickness={0.12}
-            rippleIntensityScale={1.5}
-            speed={0.5}
-            edgeFade={0.3}
-            transparent
-            maxPixelRatio={1}
-            eventSource="[data-stage]"
-          />
-        </div>
+        {/* The surface is the dive's last frame underneath (life/dive-intro.tsx); this only vignettes it */}
+        <div aria-hidden="true" className="board-glow pointer-events-none absolute inset-0" />
         <motion.div
           ref={worldRef}
           data-world=""

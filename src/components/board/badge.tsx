@@ -74,7 +74,7 @@ export function Badge() {
         />
         <div className="absolute left-1/2 top-[-14px] h-[28px] w-[14px] -translate-x-1/2 rounded-full bg-[#222] shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
         <Image
-          src="/lanyard/badge-front.png"
+          src="/lanyard/pouch-front.jpg"
           alt=""
           width={REST.w}
           height={REST.h}
@@ -97,8 +97,8 @@ export function Badge() {
               position={[0, 0, 22.4]}
               hangAt={3.5}
               gravity={[0, -40, 0]}
-              frontImage="/lanyard/badge-front.png"
-              backImage="/lanyard/badge-back.png"
+              frontImage="/lanyard/pouch-front.jpg"
+              backImage="/lanyard/pouch-back.jpg"
               lanyardWidth={1.1}
               eventSource={stage}
               onReady={() => setLive(true)}

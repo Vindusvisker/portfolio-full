@@ -17,16 +17,19 @@ const linkClass =
   "font-display text-lg font-semibold uppercase md:text-xl leading-none tracking-wide underline decoration-2 underline-offset-[5px] transition-opacity hover:opacity-60";
 
 /**
- * One cream sheet taped to the board with the whole intro on it. No paging,
- * no stack: everything is readable at once, the way a note on a wall is.
+ * A diver's writing slate with the whole intro on it: white plastic, a cord
+ * through the corner, a pencil on the cord. No paging, no stack: everything
+ * is readable at once, the way a slate clipped to a BCD is.
  */
 export function Sheet() {
   return (
     <div className="relative w-[min(92vw,400px)] md:w-[480px] -rotate-[1.2deg]" onPointerDown={(e) => e.stopPropagation()}>
-      <span aria-hidden="true" className="tape absolute -top-3 left-1/2 z-20 h-7 w-28 -translate-x-1/2 rotate-[4deg]" />
+      <span aria-hidden="true" className="slate-cord" />
+      <span aria-hidden="true" className="slate-pencil" />
 
-      <div className="panel-paper relative rounded-[3px] bg-[#f2ede4] px-5 pb-4 pt-6 text-[#1a1713] md:px-9 md:pb-7 md:pt-9">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#1a1713]/50">Note 01 · Hello</p>
+      <div className="dive-slate relative rounded-[10px] px-5 pb-4 pt-6 text-[#1a1713] md:px-9 md:pb-7 md:pt-9">
+        <span aria-hidden="true" className="slate-hole" />
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#1a1713]/50">Dive slate · 01</p>
         <h1 className="mt-1.5 font-display text-[34px] font-bold uppercase leading-[0.95] tracking-tight md:text-[54px]">
           Hey, I&apos;m Marcus!
         </h1>

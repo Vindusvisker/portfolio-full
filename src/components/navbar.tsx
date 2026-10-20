@@ -23,17 +23,16 @@ interface Look {
 }
 
 /**
- * The switch dresses for the page it is on: a holographic sticker on the
- * board, a glass readout in the stack's night sky, and on the projects page
+ * The switch dresses for the page it is on: a glass chip over the dive
+ * footage on Life, a glass readout in the stack's night sky, and on the projects page
  * plain words in difference blend, so they read on cream and on the dark
  * plates, that turn into a sticky note once the paper comes back. Styles for everything but the sticker live in globals.css.
  */
 const looks: Record<"life" | "stack" | "plain" | "note", Look> = {
   life: {
-    box: "sticker-edge sticker-edge-thin text-xs font-bold md:text-sm",
-    on: "bg-white text-black",
-    off: "text-white/70 hover:text-white",
-    style: { "--sticker-bg": "#000" } as React.CSSProperties,
+    box: "mode-switch-sea text-[11px] font-medium uppercase tracking-[0.14em] md:text-xs",
+    on: "mode-switch-sea-on text-[#f2efe8]",
+    off: "text-[#f2efe8]/55 hover:text-[#f2efe8]",
   },
   stack: {
     box: "mode-switch-space text-[11px] font-medium uppercase tracking-[0.14em] md:text-xs",
