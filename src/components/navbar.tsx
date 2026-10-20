@@ -143,7 +143,13 @@ export function Navbar() {
         />
 
         {/* Every page puts its headline top-left (see SectionTitle), so the brand lives top-right */}
-        <div className="pointer-events-auto fixed right-4 top-3 z-40 flex items-center gap-4 text-white mix-blend-difference md:right-8 md:top-4 md:gap-6">
+        {/* Difference blend keeps the brand readable on cream and the dark plates; on Life the footage is teal, so plain white */}
+        <div
+          className={cn(
+            "pointer-events-auto fixed right-4 top-3 z-40 flex items-center gap-4 text-white md:right-8 md:top-4 md:gap-6",
+            pathname === "/" ? "drop-shadow-[0_1px_2px_rgba(3,14,18,0.6)]" : "mix-blend-difference",
+          )}
+        >
           <a
             href="/resume.pdf"
             target="_blank"
