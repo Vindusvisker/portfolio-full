@@ -27,7 +27,7 @@ import { MeetingTile } from "./meeting-tile";
 import { Emoji, Keycaps, Label, LogoChip, Polaroid, Sticker, TrackChip } from "./sticker";
 
 /**
- * The home screen: the sea floor after the dive (see life/dive-intro.tsx),
+ * The home screen: the sea floor after the dive (see intro/video-intro.tsx),
  * with an ID badge hung off the top edge on the left, a note to the right,
  * and stickers around them. Everything is draggable, nothing is required.
  */
@@ -325,19 +325,19 @@ export async function Board() {
 
 
       {/* Sea die-cuts, generated Oct 20 2026 (Higgsfield), backgrounds removed. Extras live in the ring outside the first phone view. */}
-      <Sticker id="fish" bubble="I'm working remotely from Thailand right now. The sea is a ten-minute walk from my desk." desktop={{ x: 108, y: 79, rotate: -8 }} mobile={{ x: -20, y: 60, rotate: -8 }}>
+      <Sticker id="fish" bubble="I work remotely, and sometimes that means a desk ten minutes from the sea. Thailand was the first one." desktop={{ x: 108, y: 79, rotate: -8 }} mobile={{ x: -20, y: 60, rotate: -8 }}>
         <Image src="/home/sea/fish.png" alt="Reef fish sticker" width={120} height={120} className="sticker-shadow max-w-none" draggable={false} />
       </Sticker>
       <Sticker id="turtle" bubble="First marathon done. I'm the turtle, not the hare. Finished anyway." desktop={{ x: 109, y: 102, rotate: 6 }} mobile={{ x: 120, y: 70, rotate: 6 }}>
         <Image src="/home/sea/turtle.png" alt="Sea turtle sticker" width={150} height={150} className="sticker-shadow max-w-none" draggable={false} />
       </Sticker>
-      <Sticker id="crab" bubble="Four years as a crane signalman on a tanker before I wrote a line of code. The sea came first." desktop={{ x: 46, y: 95, rotate: 4 }} mobile={{ x: 50, y: 118, rotate: 4 }}>
+      <Sticker id="crab" bubble="On a trip to Thailand I trained muay thai every morning for a month. Not sure it survives a Norwegian winter." desktop={{ x: 46, y: 95, rotate: 4 }} mobile={{ x: 50, y: 118, rotate: 4 }}>
         <Image src="/home/sea/crab.png" alt="Crab sticker" width={100} height={100} className="sticker-shadow max-w-none" draggable={false} />
       </Sticker>
       <Sticker id="snorkel" bubble="You just dived onto my homepage. Welcome to the sea floor." desktop={{ x: 106, y: 12, rotate: 10 }} mobile={{ x: 115, y: 25, rotate: 10 }}>
         <Image src="/home/sea/snorkel.png" alt="Snorkel and mask sticker" width={120} height={120} className="sticker-shadow max-w-none" draggable={false} />
       </Sticker>
-      <Sticker id="surfboard" bubble="Pretty relaxed, most days. People tell me I'm easy to have around. The sea helps." desktop={{ x: -9, y: 50, rotate: -14 }} mobile={{ x: -18, y: 100, rotate: -14 }}>
+      <Sticker id="surfboard" bubble="Pretty relaxed, most days. People tell me I'm easy to have around. I'll take it." desktop={{ x: -9, y: 50, rotate: -14 }} mobile={{ x: -18, y: 100, rotate: -14 }}>
         <Image src="/home/sea/surfboard.png" alt="Surfboard sticker" width={320} height={320} className="sticker-shadow max-w-none" draggable={false} />
       </Sticker>
         </BubbleProvider>

@@ -293,7 +293,7 @@ export function Canvas({ children }: CanvasProps) {
         className={`absolute inset-0 select-none overflow-hidden ${panning ? "cursor-grabbing" : "cursor-grab"}`}
         style={{ touchAction: "none" }}
       >
-        {/* The surface is the dive's last frame underneath (life/dive-intro.tsx); this only vignettes it */}
+        {/* The surface is the dive's last frame underneath (intro/video-intro.tsx); this only vignettes it */}
         <div aria-hidden="true" className="board-glow pointer-events-none absolute inset-0" />
         <motion.div
           ref={worldRef}

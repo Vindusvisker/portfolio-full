@@ -52,6 +52,19 @@ export function routeRevealedAt() {
 export function routeCovered() {
   return typeof document !== "undefined" && document.documentElement.hasAttribute(COVER_ATTR);
 }
+/**
+ * A page intro (the dive, the crane) covers the page the way a sheet does:
+ * components that wait for the reveal then wait for the intro to land too.
+ */
+export function coverRoute() {
+  document.documentElement.setAttribute(COVER_ATTR, "");
+}
+export function revealRoute() {
+  if (!document.documentElement.hasAttribute(COVER_ATTR)) return;
+  document.documentElement.removeAttribute(COVER_ATTR);
+  revealedAt = performance.now();
+  window.dispatchEvent(new CustomEvent(ROUTE_REVEAL_EVENT));
+}
 /** Seconds the sheet slides in, and the lift. */
 const SLIDE = 0.85;
 const LIFT = 0.5;
